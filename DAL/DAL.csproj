@@ -20,10 +20,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Interfaces\" />
-    <Folder Include="UnitOfWork\" />
-    <Folder Include="Repositories\" />
-  </ItemGroup>
-
 </Project>
