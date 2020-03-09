@@ -9,7 +9,7 @@ namespace DAL.Entities
         public string Name { get; set; }
 
         [ForeignKey("User")]
-        public int OwnerId { get; set; }
+        public string OwnerId { get; set; }
         public User Owner { get; set; }
         public ICollection<Article> Articles { get; set; }
     }

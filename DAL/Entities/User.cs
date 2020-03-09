@@ -7,6 +7,6 @@ namespace DAL.Entities
     public class User : IdentityUser
     {
         public ICollection<Comment> Comments { get; set; }
-        public ICollection<Blog> Blog { get; set; }
+        public ICollection<Blog> Blogs { get; set; }
     }
 }
