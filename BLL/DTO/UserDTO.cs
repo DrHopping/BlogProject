@@ -5,7 +5,7 @@ namespace BLL.DTO
 {
     public class UserDTO
     {
-        public string Id { get; set; }
+        public string UserId { get; set; }
         public string UserName { get; set; }
         [EmailAddress]
         public string Email { get; set; }

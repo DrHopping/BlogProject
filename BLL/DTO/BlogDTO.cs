@@ -6,7 +6,7 @@ namespace BLL.DTO
 {
     public class BlogDTO
     {
-        public int? Id { get; set; }
+        public int? BlogId { get; set; }
         public string Name { get; set; }
         public string OwnerId { get; set; }
         public string OwnerUsername { get; set; }
