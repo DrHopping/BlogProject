@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BLL.DTO
 {
-    class BlogDTO
+    public class BlogDTO
     {
         public int? Id { get; set; }
         public string Name { get; set; }
