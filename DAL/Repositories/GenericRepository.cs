@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,6 +39,11 @@ namespace DAL.Repositories
         {
             var entity = _dbSet.Find(id);
             return entity;
+        }
+
+        public async Task<T> GetByIdAsync(int id)
+        {
+            return await _dbSet.FindAsync(id);
         }
 
         public void Insert(T entity)
