@@ -3,16 +3,27 @@ using DAL.Entities;
 
 namespace BLL.Mappers
 {
-    public class ArticleMapper : BaseMapper<Article, ArticleDto>
+    public class ArticleMapper : BaseMapper<Article, ArticleDTO>
     {
-        public override Article Map(ArticleDto element)
+        public override Article Map(ArticleDTO element)
         {
-            throw new System.NotImplementedException();
+            return new Article
+            {
+                Title = element.Title,
+                Content = element.Content,
+                BlogId = element.BlogId.GetValueOrDefault()
+            };
         }
 
-        public override ArticleDto Map(Article element)
+        public override ArticleDTO Map(Article element)
         {
-            throw new System.NotImplementedException();
+            return new ArticleDTO
+            {
+                ArticleId = element.ArticleId,
+                Title = element.Title,
+                Content = element.Content,
+                BlogId = element.BlogId,
+            };
         }
     }
 }
