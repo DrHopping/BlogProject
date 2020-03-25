@@ -6,7 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace BLL.Models
 {
-    class JwtOptions
+    public class JwtOptions
     {
         public string Issuer { get; set; }
         public string Audience { get; set; }
