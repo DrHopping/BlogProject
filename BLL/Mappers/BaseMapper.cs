@@ -3,12 +3,12 @@ using BLL.Interfaces;
 
 namespace BLL.Mappers
 {
-    public abstract class BaseMapper<TFirst, TSecond> : IMappper<TFirst, TSecond>
+    public abstract class BaseMapper<TFirst, TSecond> : IMapper<TFirst, TSecond>
     {
         public abstract TFirst Map(TSecond element);
         public abstract TSecond Map(TFirst element);
 
-        public ICollection<TFirst> Map(ICollection<TSecond> elements)
+        public IEnumerable<TFirst> Map(IEnumerable<TSecond> elements)
         {
             var mappedCollection = new List<TFirst>();
             if (elements != null)
@@ -26,7 +26,7 @@ namespace BLL.Mappers
             return mappedCollection;
         }
 
-        public ICollection<TSecond> Map(ICollection<TFirst> elements)
+        public IEnumerable<TSecond> Map(IEnumerable<TFirst> elements)
         {
             var mappedCollection = new List<TSecond>();
             if (elements != null)

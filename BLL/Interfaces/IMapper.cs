@@ -2,11 +2,11 @@
 
 namespace BLL.Interfaces
 {
-    public interface IMappper<TFirst, TSecond>
+    public interface IMapper<TFirst, TSecond>
     {
         TFirst Map(TSecond element);
         TSecond Map(TFirst element);
-        ICollection<TFirst> Map(ICollection<TSecond> elements);
-        ICollection<TSecond> Map(ICollection<TFirst> elements);
+        IEnumerable<TFirst> Map(IEnumerable<TSecond> elements);
+        IEnumerable<TSecond> Map(IEnumerable<TFirst> elements);
     }
 }
