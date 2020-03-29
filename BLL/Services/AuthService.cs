@@ -14,16 +14,16 @@ namespace BLL.Services
     {
         private UserManager<User> _userManager;
         private IJwtFactory _jwtFactory;
-        private JwtOptions _jwtIssuerOptions;
+        private JwtOptions _jwtOptions;
 
-        public AuthService(UserManager<User> userManager, IJwtFactory jwtFactory, JwtOptions jwtIssuerOptions)
+        public AuthService(UserManager<User> userManager, IJwtFactory jwtFactory, JwtOptions jwtOptions)
         {
             _userManager = userManager;
             _jwtFactory = jwtFactory;
-            _jwtIssuerOptions = jwtIssuerOptions;
+            _jwtOptions = jwtOptions;
         }
 
-        public async Task<ClaimsIdentity> GetClaimsIdentity(UserDTO user)
+        private async Task<ClaimsIdentity> GetClaimsIdentity(UserDTO user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
             if (user.UserName == null) throw new ArgumentNullException(nameof(user.UserName));
@@ -44,12 +44,24 @@ namespace BLL.Services
                 return await _jwtFactory.GenerateClaimsIdentity(userToVerify);
             }
 
-            if (await _userManager.CheckPasswordAsync(userToVerify, user.Password))
-            {
-                return await _jwtFactory.GenerateClaimsIdentity(userToVerify);
-            }
-
             throw new WrongCredentialsException();
+        }
+
+        public async Task<object> Authenticate(UserDTO user)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            var identity = await GetClaimsIdentity(user);
+            if (identity == null) throw new ArgumentNullException(nameof(identity));
+
+            var token = await _jwtFactory.GenerateEncodedToken(user.UserName, identity);
+            if (token == null) throw new ArgumentNullException(nameof(token));
+            return new
+            {
+                id = identity.FindFirst(ClaimTypes.NameIdentifier).Value,
+                auth_token = token,
+                expires_in = (int)_jwtOptions.ValidFor.TotalSeconds
+            };
         }
     }
 }
