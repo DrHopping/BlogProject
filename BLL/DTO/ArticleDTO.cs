@@ -12,7 +12,7 @@ namespace BLL.DTO
         public int? BlogId { get; set; }
         public string AuthorId { get; set; }
         public string AuthorUsername { get; set; }
-        public ICollection<CommentDTO> Comments { get; set; }
-        public ICollection<TagDTO> Tags { get; set; }
+        public IEnumerable<CommentDTO> Comments { get; set; }
+        public IEnumerable<TagDTO> Tags { get; set; }
     }
 }

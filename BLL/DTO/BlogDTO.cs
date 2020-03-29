@@ -10,6 +10,6 @@ namespace BLL.DTO
         public string Name { get; set; }
         public string OwnerId { get; set; }
         public string OwnerUsername { get; set; }
-        public ICollection<ArticleDTO> Articles { get; set; }
+        public IEnumerable<ArticleDTO> Articles { get; set; }
     }
 }
