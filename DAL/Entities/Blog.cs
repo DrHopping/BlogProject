@@ -11,6 +11,6 @@ namespace DAL.Entities
         [ForeignKey("User")]
         public string OwnerId { get; set; }
         public User Owner { get; set; }
-        public ICollection<Article> Articles { get; set; }
+        public IEnumerable<Article> Articles { get; set; }
     }
 }

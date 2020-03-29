@@ -6,7 +6,7 @@ namespace DAL.Entities
 {
     public class User : IdentityUser
     {
-        public ICollection<Comment> Comments { get; set; }
-        public ICollection<Blog> Blogs { get; set; }
+        public IEnumerable<Comment> Comments { get; set; }
+        public IEnumerable<Blog> Blogs { get; set; }
     }
 }

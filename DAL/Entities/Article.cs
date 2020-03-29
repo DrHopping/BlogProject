@@ -16,8 +16,8 @@ namespace DAL.Entities
         [ForeignKey("Blog")]
         public int BlogId { get; set; }
         public Blog Blog { get; set; }
-        public ICollection<Comment> Comments { get; set; }
-        public ICollection<Tag> Tags { get; set; }
+        public IEnumerable<Comment> Comments { get; set; }
+        public IEnumerable<Tag> Tags { get; set; }
 
     }
 }
