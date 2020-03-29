@@ -157,7 +157,23 @@ namespace BLL.Services
             bool checkPassword = await _userManager.CheckPasswordAsync(userEntity, password.OldPassword);
             if (checkPassword == false) throw new ArgumentException(nameof(password));
             return (await _userManager.ChangePasswordAsync(userEntity, password.OldPassword, password.NewPassword)).Succeeded;
+        }
 
+        public async Task<IEnumerable<BlogDTO>> GetAllBlogsByUserId(string id)
+        {
+            var userEntity = await _userManager.FindByIdAsync(id);
+            if (userEntity == null) throw new ArgumentNullException(nameof(userEntity), "Couldn't find user with this id");
+            var blogs = _unitOfWork.BlogRepository.Get(b => b.OwnerId == id);
+            return BlogMapper.Map(blogs);
+        }
+
+        public async Task<IEnumerable<CommentDTO>> GetAllCommentsByUserId(string id)
+        {
+            if (id == null) throw new ArgumentNullException();
+            var userEntity = await _userManager.FindByIdAsync(id);
+            if (userEntity == null) throw new ArgumentNullException(nameof(userEntity), "Couldn't find user with this id");
+            var comments = _unitOfWork.CommentRepository.Get(c => c.UserId == id);
+            return CommentMapper.Map(comments);
         }
     }
 }
