@@ -93,9 +93,9 @@ namespace BLL.Services
             return BlogMapper.Map(await _unitOfWork.BlogRepository.Get());
         }
 
-        public IEnumerable<ArticleDTO> GetAllArticlesByBlogId(int id)
+        public async Task<IEnumerable<ArticleDTO>> GetAllArticlesByBlogId(int id)
         {
-            var blog = GetBlogById(id);
+            var blog = await GetBlogById(id);
             return blog.Articles;
         }
     }
