@@ -87,5 +87,88 @@ namespace BLL.Services
             return result;
         }
 
+        public async Task DeleteArticle(int id, string token)
+        {
+            if (token == null) throw new ArgumentNullException(nameof(token));
+            var article = _unitOfWork.ArticleRepository.GetById(id);
+            if (article == null) throw new ArgumentNullException(nameof(article), $"Couldn't find article with id {id}");
+            var ownerId = _unitOfWork.BlogRepository.GetById(article.BlogId).OwnerId;
+            var requesterId = _jwtFactory.GetUserIdClaim(token);
+            if (!ownerId.Equals(requesterId))
+            {
+                if (!_jwtFactory.GetUserRoleClaim(token).Equals("Moderator")) throw new NotEnoughRightsException();
+            }
+
+            _unitOfWork.ArticleRepository.Delete(article);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task UpdateArticle(int id, ArticleDTO article, string token)
+        {
+            if (token == null) throw new ArgumentNullException(nameof(token));
+            if (article == null) throw new ArgumentNullException(nameof(article));
+            var entity = _unitOfWork.ArticleRepository.GetById(id);
+            if (entity == null) throw new ArgumentNullException(nameof(article));
+
+            var ownerId = _unitOfWork.BlogRepository.GetById(entity.BlogId).OwnerId;
+            var requesterId = _jwtFactory.GetUserIdClaim(token);
+            if (!ownerId.Equals(requesterId)) throw new NotEnoughRightsException();
+
+            entity.Title = article.Title;
+            entity.Content = article.Content;
+            _unitOfWork.ArticleRepository.Update(entity);
+            await _unitOfWork.SaveAsync();
+        }
+
+        //TODO: Better db usage
+        public async Task<ArticleDTO> GetArticleById(int id)
+        {
+            var article = (await _unitOfWork.ArticleRepository.Get(a => a.ArticleId == id, includeProperties: "Tags")).FirstOrDefault();
+            if (article == null) throw new ArgumentNullException(nameof(article), $"Couldn't find article with id {id}");
+            var result = ArticleMapper.Map(article);
+            var comments = await _unitOfWork.CommentRepository.Get(c => c.ArticleId == id, includeProperties: "User");
+
+            if (comments != null && comments.Any())
+            {
+                result.Comments = CommentMapper.Map(comments);
+            }
+
+            var owner = article.Blog.Owner; //TODO: Make lazy loading work
+            result.AuthorId = owner.Id;
+            result.AuthorUsername = owner.UserName;
+
+            if (article.Tags != null && article.Tags.Any())
+            {
+                result.Tags = TagMapper.Map(article.Tags);
+            }
+
+            return result;
+        }
+
+        public async Task<IEnumerable<CommentDTO>> GetCommentsByArticleId(int id)
+        {
+            var article = await GetArticleById(id);
+            return article.Comments;
+        }
+
+        public async Task<IEnumerable<TagDTO>> GetTagsByArticleId(int id)
+        {
+            var article = await GetArticleById(id);
+            return article.Tags;
+        }
+
+        public async Task<IEnumerable<ArticleDTO>> GetArticlesByTextFilter(string filter)
+        {
+            var articles = await _unitOfWork.ArticleRepository.Get(a => a.Content.Contains(filter) || a.Title.Contains(filter));
+            if (articles == null) throw new ArgumentNullException(nameof(articles));
+            return ArticleMapper.Map(articles);
+        }
+
+        public async Task<IEnumerable<ArticleDTO>> GetAllArticles()
+        {
+            var articles = await _unitOfWork.ArticleRepository.Get();
+            if (articles == null) throw new ArgumentNullException(nameof(articles));
+            return ArticleMapper.Map(articles);
+        }
     }
 }
