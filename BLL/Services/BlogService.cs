@@ -10,7 +10,7 @@ using DAL.Interfaces;
 
 namespace BLL.Services
 {
-    public class BlogService
+    public class BlogService : IBlogService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IJwtFactory _jwtFactory;

@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BLL.Services
 {
-    public class CommentService
+    public class CommentService : ICommentService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IJwtFactory _jwtFactory;

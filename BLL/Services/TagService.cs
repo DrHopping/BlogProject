@@ -7,7 +7,7 @@ using DAL.Interfaces;
 
 namespace BLL.Services
 {
-    public class TagService
+    public class TagService : ITagService
     {
         private readonly IUnitOfWork _unitOfWork;
         private TagMapper _tagMapper;

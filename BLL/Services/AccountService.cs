@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services
 {
-    public class AccountService
+    public class AccountService : IAccountService
     {
         private readonly UserManager<User> _userManager;
         private readonly IJwtFactory _jwtFactory;

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BLL.Services
 {
-    public class AuthService
+    public class AuthService : IAuthService
     {
         private readonly UserManager<User> _userManager;
         private readonly IJwtFactory _jwtFactory;
