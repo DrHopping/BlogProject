@@ -163,7 +163,7 @@ namespace BLL.Services
         {
             var userEntity = await _userManager.FindByIdAsync(id);
             if (userEntity == null) throw new ArgumentNullException(nameof(userEntity), $"Couldn't find user with id {id}");
-            var blogs = _unitOfWork.BlogRepository.Get(b => b.OwnerId == id);
+            var blogs = await _unitOfWork.BlogRepository.Get(b => b.OwnerId == id);
             return BlogMapper.Map(blogs);
         }
 
@@ -172,7 +172,7 @@ namespace BLL.Services
             if (id == null) throw new ArgumentNullException();
             var userEntity = await _userManager.FindByIdAsync(id);
             if (userEntity == null) throw new ArgumentNullException(nameof(userEntity), $"Couldn't find user with id {id}");
-            var comments = _unitOfWork.CommentRepository.Get(c => c.UserId == id);
+            var comments = await _unitOfWork.CommentRepository.Get(c => c.UserId == id);
             return CommentMapper.Map(comments);
         }
     }

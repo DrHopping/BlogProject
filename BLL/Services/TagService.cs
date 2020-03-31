@@ -19,7 +19,7 @@ namespace BLL.Services
 
         private TagMapper TagMapper => _tagMapper ??= new TagMapper();
 
-        public Task<IEnumerable<TagDTO>> GetAllTags()
+        public async Task<IEnumerable<TagDTO>> GetAllTags()
         {
             return TagMapper.Map(await _unitOfWork.TagRepository.Get());
         }
