@@ -14,8 +14,8 @@ namespace BLL.Services
 {
     public class ArticleService
     {
-        private IUnitOfWork _unitOfWork;
-        private IJwtFactory _jwtFactory;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IJwtFactory _jwtFactory;
         private UserManager<User> _userManager;
         private ArticleMapper _articleMapper;
         private TagMapper _tagMapper;

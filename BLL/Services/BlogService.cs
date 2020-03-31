@@ -12,8 +12,8 @@ namespace BLL.Services
 {
     public class BlogService
     {
-        private IUnitOfWork _unitOfWork;
-        private IJwtFactory _jwtFactory;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IJwtFactory _jwtFactory;
         private BlogMapper _blogMapper;
         private ArticleMapper _articleMapper;
 

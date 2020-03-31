@@ -13,9 +13,9 @@ namespace BLL.Services
 {
     public class CommentService
     {
-        private IUnitOfWork _unitOfWork;
-        private IJwtFactory _jwtFactory;
-        private UserManager<User> _userManager;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IJwtFactory _jwtFactory;
+        private readonly UserManager<User> _userManager;
         private CommentMapper _commentMapper;
 
         public CommentService(IUnitOfWork unitOfWork, IJwtFactory jwtFactory, UserManager<User> userManager)

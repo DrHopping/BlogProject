@@ -9,7 +9,7 @@ namespace BLL.Services
 {
     public class TagService
     {
-        private IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private TagMapper _tagMapper;
 
         public TagService(IUnitOfWork unitOfWork)

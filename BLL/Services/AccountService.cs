@@ -17,8 +17,8 @@ namespace BLL.Services
     public class AccountService
     {
         private readonly UserManager<User> _userManager;
-        private IJwtFactory _jwtFactory;
-        private IUnitOfWork _unitOfWork;
+        private readonly IJwtFactory _jwtFactory;
+        private readonly IUnitOfWork _unitOfWork;
         private UserMapper _userMapper;
         private BlogMapper _blogMapper;
         private CommentMapper _commentMapper;

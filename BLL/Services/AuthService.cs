@@ -12,9 +12,9 @@ namespace BLL.Services
 {
     public class AuthService
     {
-        private UserManager<User> _userManager;
-        private IJwtFactory _jwtFactory;
-        private JwtOptions _jwtOptions;
+        private readonly UserManager<User> _userManager;
+        private readonly IJwtFactory _jwtFactory;
+        private readonly JwtOptions _jwtOptions;
 
         public AuthService(UserManager<User> userManager, IJwtFactory jwtFactory, JwtOptions jwtOptions)
         {
