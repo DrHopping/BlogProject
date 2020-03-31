@@ -51,7 +51,7 @@ namespace DAL.Repositories
             _dbSet.Add(entity);
         }
 
-        public virtual IEnumerable<T> Get(
+        public virtual async Task<IEnumerable<T>> Get(
             Expression<Func<T, bool>> filter = null,
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
             string includeProperties = "")
@@ -71,11 +71,11 @@ namespace DAL.Repositories
 
             if (orderBy != null)
             {
-                return orderBy(query).ToList();
+                return await orderBy(query).ToListAsync();
             }
             else
             {
-                return query.ToList();
+                return await query.ToListAsync();
             }
         }
         public void Dispose()

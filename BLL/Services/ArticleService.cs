@@ -39,7 +39,7 @@ namespace BLL.Services
             {
                 foreach (var tag in articleDto.Tags)
                 {
-                    var tagEntity = _unitOfWork.TagRepository.Get(t => t.Name == tag.Name).FirstOrDefault();
+                    var tagEntity = (await _unitOfWork.TagRepository.Get(t => t.Name == tag.Name)).FirstOrDefault();
                     if (tagEntity != null) continue;
 
                     tagEntity = TagMapper.Map(tag);
@@ -49,11 +49,11 @@ namespace BLL.Services
             }
         }
 
-        public IEnumerable<ArticleDTO> GetArticlesByTags(string tags)
+        public async Task<IEnumerable<ArticleDTO>> GetArticlesByTags(string tags)
         {
             if (tags == null) throw new ArgumentNullException(nameof(tags));
             var tagNames = tags.Split(',');
-            var articles = _unitOfWork.ArticleRepository.Get(includeProperties: "Tags");
+            var articles = await _unitOfWork.ArticleRepository.Get(includeProperties: "Tags");
             articles = articles.Where(a => tagNames.Except(a.Tags.Select(t => t.Name)).Any());
             return ArticleMapper.Map(articles);
         }
@@ -74,14 +74,14 @@ namespace BLL.Services
             if (article.Tags != null && article.Tags.Any())
             {
                 var tagsEntities =
-                    _unitOfWork.TagRepository.Get(t => article.Tags.Select(tDto => tDto.Name).Contains(t.Name));
+                    await _unitOfWork.TagRepository.Get(t => article.Tags.Select(tDto => tDto.Name).Contains(t.Name));
                 articleEntity.Tags = tagsEntities;
             }
 
             _unitOfWork.ArticleRepository.Insert(articleEntity);
             await _unitOfWork.SaveAsync();
 
-            var result = ArticleMapper.Map(_unitOfWork.ArticleRepository.Get(a => a.Title == article.Title && a.BlogId == article.BlogId).FirstOrDefault());
+            var result = ArticleMapper.Map((await _unitOfWork.ArticleRepository.Get(a => a.Title == article.Title && a.BlogId == article.BlogId)).FirstOrDefault());
             if (result == null) throw new ArgumentException(nameof(result), $"Couldn't create article");
 
             return result;

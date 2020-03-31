@@ -24,7 +24,8 @@ namespace BLL.Mappers
                 CommentId = element.CommentId,
                 Content = element.Content,
                 ArticleId = element.ArticleId,
-                CreatorId = element.UserId
+                CreatorId = element.UserId,
+                CreatorUsername = element.User.UserName
             };
         }
     }

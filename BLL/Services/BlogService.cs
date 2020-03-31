@@ -44,8 +44,8 @@ namespace BLL.Services
 
             _unitOfWork.BlogRepository.Insert(blogEntity);
             await _unitOfWork.SaveAsync();
-            blogEntity = _unitOfWork.BlogRepository
-                .Get(b => b.Name == blog.Name || b.OwnerId == blog.OwnerId)
+            blogEntity = (await _unitOfWork.BlogRepository
+                .Get(b => b.Name == blog.Name || b.OwnerId == blog.OwnerId))
                 .FirstOrDefault();
             if (blogEntity == null) throw new ArgumentNullException(nameof(blogEntity), "Couldn't create blog");
             var result = BlogMapper.Map(blogEntity);
@@ -65,22 +65,22 @@ namespace BLL.Services
             else throw new NotEnoughRightsException();
         }
 
-        public void UpdateBlogName(int id, BlogDTO blog, string token)
+        public async Task UpdateBlogName(int id, BlogDTO blog, string token)
         {
             if (token == null) throw new ArgumentNullException(nameof(token));
             if (blog == null) throw new ArgumentNullException(nameof(blog));
             var entity = _unitOfWork.BlogRepository.GetById(id);
             if (entity == null) throw new ArgumentNullException(nameof(entity), "This blog doesn't exist");
             if (!CheckRights(token, entity.OwnerId)) throw new NotEnoughRightsException();
-            if (_unitOfWork.BlogRepository.Get(b => b.Name == blog.Name).FirstOrDefault() != null) throw new NameAlreadyTakenException();
+            if ((await _unitOfWork.BlogRepository.Get(b => b.Name == blog.Name)).FirstOrDefault() != null) throw new NameAlreadyTakenException();
             entity.Name = blog.Name;
             _unitOfWork.BlogRepository.Update(entity);
             _unitOfWork.Save();
         }
 
-        public BlogDTO GetBlogById(int id)
+        public async Task<BlogDTO> GetBlogById(int id)
         {
-            var blog = _unitOfWork.BlogRepository.Get((b => b.BlogId == id), includeProperties: "Articles,Owner").FirstOrDefault();
+            var blog = (await _unitOfWork.BlogRepository.Get((b => b.BlogId == id), includeProperties: "Articles,Owner")).FirstOrDefault();
             if (blog == null) throw new ArgumentNullException(nameof(blog), "Couldn't find blog by id");
             var dto = BlogMapper.Map(blog);
             if (blog.Articles.Any()) dto.Articles = ArticleMapper.Map(blog.Articles);
@@ -88,9 +88,9 @@ namespace BLL.Services
             return dto;
         }
 
-        public IEnumerable<BlogDTO> GetAllBlogs()
+        public async Task<IEnumerable<BlogDTO>> GetAllBlogs()
         {
-            return BlogMapper.Map(_unitOfWork.BlogRepository.Get());
+            return BlogMapper.Map(await _unitOfWork.BlogRepository.Get());
         }
 
         public IEnumerable<ArticleDTO> GetAllArticlesByBlogId(int id)
