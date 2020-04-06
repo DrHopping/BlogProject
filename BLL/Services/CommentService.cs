@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using BLL.DTO;
 using BLL.Exceptions;
 using BLL.Interfaces;
@@ -16,16 +17,15 @@ namespace BLL.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IJwtFactory _jwtFactory;
         private readonly UserManager<User> _userManager;
-        private CommentMapper _commentMapper;
+        private readonly IMapper _mapper;
 
-        public CommentService(IUnitOfWork unitOfWork, IJwtFactory jwtFactory, UserManager<User> userManager)
+        public CommentService(IUnitOfWork unitOfWork, IJwtFactory jwtFactory, UserManager<User> userManager, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _jwtFactory = jwtFactory;
             _userManager = userManager;
+            _mapper = mapper;
         }
-
-        private CommentMapper CommentMapper => _commentMapper ??= new CommentMapper();
 
         public async Task<CommentDTO> AddComment(CommentDTO comment, string token)
         {
@@ -39,12 +39,13 @@ namespace BLL.Services
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            var commentEntity = CommentMapper.Map(comment);
+            var commentEntity = _mapper.Map<CommentDTO, Comment>(comment);
             commentEntity.UserId = userId;
 
             _unitOfWork.CommentRepository.Insert(commentEntity);
             await _unitOfWork.SaveAsync();
-            var result = CommentMapper.Map(commentEntity);
+
+            var result = _mapper.Map<Comment, CommentDTO>(commentEntity);
             result.CreatorUsername = user.UserName;
             return result;
         }
@@ -85,7 +86,7 @@ namespace BLL.Services
         {
             var comment = await _unitOfWork.CommentRepository.GetByIdAsync(id);
             if (comment == null) throw new ArgumentNullException(nameof(comment), $"Cant find comment with id {id}");
-            var result = CommentMapper.Map(comment);
+            var result = _mapper.Map<Comment, CommentDTO>(comment);
             return result;
         }
 
@@ -93,7 +94,7 @@ namespace BLL.Services
         {
             var comments = await _unitOfWork.CommentRepository.Get();
             if (comments == null) throw new ArgumentNullException(nameof(comments));
-            var result = CommentMapper.Map(comments);
+            var result = _mapper.Map<IEnumerable<Comment>, IEnumerable<CommentDTO>>(comments);
             return result;
         }
     }
