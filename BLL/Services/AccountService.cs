@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using BLL.DTO;
 using BLL.Exceptions;
 using BLL.Interfaces;
@@ -19,48 +20,43 @@ namespace BLL.Services
         private readonly UserManager<User> _userManager;
         private readonly IJwtFactory _jwtFactory;
         private readonly IUnitOfWork _unitOfWork;
-        private UserMapper _userMapper;
-        private BlogMapper _blogMapper;
-        private CommentMapper _commentMapper;
+        private readonly IMapper _mapper;
 
-        private BlogMapper BlogMapper => _blogMapper ??= new BlogMapper();
-        private UserMapper UserMapper => _userMapper ??= new UserMapper();
-        private CommentMapper CommentMapper => _commentMapper ??= new CommentMapper();
-
-        public AccountService(UserManager<User> userManager, IJwtFactory jwtFactory, IUnitOfWork unitOfWork)
+        public AccountService(UserManager<User> userManager, IJwtFactory jwtFactory, IUnitOfWork unitOfWork, IMapper mapper)
         {
             _userManager = userManager;
             _jwtFactory = jwtFactory;
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
-        private async Task<User> CreateUser(UserDTO userDTO)
+        private async Task<User> CreateUser(UserDTO userDto)
         {
-            if (await _userManager.FindByEmailAsync(userDTO.Email) != null) throw new EmailAlreadyTakenException();
-            if (await _userManager.FindByNameAsync(userDTO.UserName) != null) throw new NameAlreadyTakenException();
+            if (await _userManager.FindByEmailAsync(userDto.Email) != null) throw new EmailAlreadyTakenException();
+            if (await _userManager.FindByNameAsync(userDto.UserName) != null) throw new NameAlreadyTakenException();
 
-            var user = UserMapper.Map(userDTO);
+            var user = _mapper.Map<UserDTO, User>(userDto);
 
-            var result = await _userManager.CreateAsync(user, userDTO.Password);
+            var result = await _userManager.CreateAsync(user, userDto.Password);
             return result.Succeeded ? await _userManager.FindByNameAsync(user.UserName) : null;
         }
 
-        private async Task<UserDTO> RegisterToRole(string role, UserDTO userDTO)
+        private async Task<UserDTO> RegisterToRole(string role, UserDTO userDto)
         {
-            var user = await CreateUser(userDTO);
+            var user = await CreateUser(userDto);
             if (user == null) throw new ArgumentNullException(nameof(user), "Couldn't create user");
             await _userManager.AddToRoleAsync(user, role);
-            return UserMapper.Map(user);
+            return _mapper.Map<User, UserDTO>(user);
         }
 
         private async Task<IEnumerable<UserDTO>> GetUsersByRole(string role)
-            => UserMapper.Map((await _userManager.GetUsersInRoleAsync(role)).ToList());
+            => _mapper.Map<IEnumerable<User>, IEnumerable<UserDTO>>((await _userManager.GetUsersInRoleAsync(role)).ToList());
 
-        public async Task<UserDTO> RegisterRegularUser(UserDTO userDTO) => await RegisterToRole("RegularUser", userDTO);
-        public async Task<UserDTO> RegisterModerator(UserDTO userDTO) => await RegisterToRole("Moderator", userDTO);
+        public async Task<UserDTO> RegisterRegularUser(UserDTO userDto) => await RegisterToRole("RegularUser", userDto);
+        public async Task<UserDTO> RegisterModerator(UserDTO userDto) => await RegisterToRole("Moderator", userDto);
         public async Task<IEnumerable<UserDTO>> GetAllRegularUsers() => await GetUsersByRole("RegularUser");
         public async Task<IEnumerable<UserDTO>> GetAllModerators() => await GetUsersByRole("Moderator");
         public async Task<IEnumerable<UserDTO>> GetAllUsers()
-            => UserMapper.Map(await _userManager.Users.ToListAsync());
+            => _mapper.Map<IEnumerable<User>, IEnumerable<UserDTO>>(await _userManager.Users.ToListAsync());
 
         public async Task<UserDTO> GetUserById(string id, string token)
         {
@@ -71,19 +67,19 @@ namespace BLL.Services
             if (user == null) throw new ArgumentNullException(nameof(user), $"Couldn't find user with id {id}");
 
             var requesterId = _jwtFactory.GetUserIdClaim(token);
-            if (requesterId == id) return UserMapper.Map(user);
+            if (requesterId == id) return _mapper.Map<User, UserDTO>(user);
 
             var requesterRoleClaim = _jwtFactory.GetUserRoleClaim(token);
 
             switch (requesterRoleClaim)
             {
                 case "Admin":
-                    return UserMapper.Map(user);
+                    return _mapper.Map<User, UserDTO>(user);
                 case "Moderator":
                     {
                         var roles = await _userManager.GetRolesAsync(user);
                         if (roles.Any(r => r == "Moderator" || r == "Admin")) throw new NotEnoughRightsException();
-                        return UserMapper.Map(user);
+                        return _mapper.Map<User, UserDTO>(user);
                     }
                 default:
                     throw new NotEnoughRightsException();
@@ -120,25 +116,23 @@ namespace BLL.Services
             var userEntity = await _userManager.FindByIdAsync(id);
             if (userEntity == null) throw new ArgumentNullException(nameof(userEntity), $"Couldn't find user with id {id}");
 
-            if (requesterId == id || requesterRole == "Admin")
-            {
-                if (user.UserName != null && userEntity.UserName.CompareTo(user.UserName) != 0)
-                {
-                    var isNameTaken = await _userManager.FindByNameAsync(user.UserName);
-                    if (isNameTaken != null) throw new NameAlreadyTakenException();
-                    userEntity.UserName = user.UserName;
-                }
-                else if (user.Email != null && userEntity.Email.CompareTo(user.Email) != 0)
-                {
-                    var isEmailTaken = await _userManager.FindByEmailAsync(user.Email);
-                    if (isEmailTaken != null) throw new NameAlreadyTakenException();
-                    userEntity.Email = user.Email;
-                }
+            if (requesterId != id && requesterRole != "Admin") throw new NotEnoughRightsException();
 
-                return (await _userManager.UpdateAsync(userEntity)).Succeeded;
+            if (user.UserName != null && !userEntity.UserName.Equals(user.UserName))
+            {
+                var isNameTaken = await _userManager.FindByNameAsync(user.UserName);
+                if (isNameTaken != null) throw new NameAlreadyTakenException();
+                userEntity.UserName = user.UserName;
+            }
+            else if (user.Email != null && !userEntity.Email.Equals(user.Email))
+            {
+                var isEmailTaken = await _userManager.FindByEmailAsync(user.Email);
+                if (isEmailTaken != null) throw new NameAlreadyTakenException();
+                userEntity.Email = user.Email;
             }
 
-            throw new NotEnoughRightsException();
+            return (await _userManager.UpdateAsync(userEntity)).Succeeded;
+
         }
 
         public async Task<bool> ChangePassword(string id, PasswordDTO password, string token)
@@ -164,7 +158,7 @@ namespace BLL.Services
             var userEntity = await _userManager.FindByIdAsync(id);
             if (userEntity == null) throw new ArgumentNullException(nameof(userEntity), $"Couldn't find user with id {id}");
             var blogs = await _unitOfWork.BlogRepository.Get(b => b.OwnerId == id);
-            return BlogMapper.Map(blogs);
+            return _mapper.Map<IEnumerable<Blog>, IEnumerable<BlogDTO>>(blogs);
         }
 
         public async Task<IEnumerable<CommentDTO>> GetAllCommentsByUserId(string id)
@@ -173,7 +167,7 @@ namespace BLL.Services
             var userEntity = await _userManager.FindByIdAsync(id);
             if (userEntity == null) throw new ArgumentNullException(nameof(userEntity), $"Couldn't find user with id {id}");
             var comments = await _unitOfWork.CommentRepository.Get(c => c.UserId == id);
-            return CommentMapper.Map(comments);
+            return _mapper.Map<IEnumerable<Comment>, IEnumerable<CommentDTO>>(comments);
         }
     }
 }
