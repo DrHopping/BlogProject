@@ -7,10 +7,10 @@ namespace DAL.Data
 {
     public class BlogDbContext : IdentityDbContext<User>
     {
-        public DbSet<Article> Articles { get; set; }
-        public DbSet<Blog> Blogs { get; set; }
-        public DbSet<Comment> Comments { get; set; }
-        public DbSet<Tag> Tags { get; set; }
+        public virtual DbSet<Article> Articles { get; set; }
+        public virtual DbSet<Blog> Blogs { get; set; }
+        public virtual DbSet<Comment> Comments { get; set; }
+        public virtual DbSet<Tag> Tags { get; set; }
 
         public BlogDbContext() : base() { }
 
