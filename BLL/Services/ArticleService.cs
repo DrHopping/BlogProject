@@ -143,7 +143,9 @@ namespace BLL.Services
 
         public async Task<IEnumerable<ArticleDTO>> GetArticlesByTextFilter(string filter)
         {
-            var articles = await _unitOfWork.ArticleRepository.Get(a => a.Content.Contains(filter) || a.Title.Contains(filter));
+            var articles = await _unitOfWork.ArticleRepository.
+                Get(a => a.Content.ToLower().Contains(filter.ToLower())
+                         || a.Title.ToLower().Contains(filter.ToLower()));
             if (articles == null) throw new ArgumentNullException(nameof(articles));
             return _mapper.Map<IEnumerable<Article>, IEnumerable<ArticleDTO>>(articles);
         }
