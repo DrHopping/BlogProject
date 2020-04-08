@@ -102,7 +102,7 @@ namespace BlogTests.BLL
         }
 
         [Fact]
-        public async Task DeleteArticle()
+        public async Task DeleteArticle_SuccessfullyDeletesArticle()
         {
             //Arrange
             var articles = new List<Article>()
@@ -132,6 +132,56 @@ namespace BlogTests.BLL
 
             //Assert
             Assert.Empty(articles);
+        }
+
+        [Theory]
+        [InlineData(3, "Cats")]
+        [InlineData(2, "HotDogs")]
+        [InlineData(1, "Dogs")]
+        [InlineData(1, "Cats,Dogs")]
+        [InlineData(0, "Unicorns")]
+        public async Task GetArticlesByTags_ReturnsArticlesWithPassedTags(int count, string tags)
+        {
+            //Arrange
+            var articles = new List<Article>()
+            {
+                #region Define articles
+                new Article()
+                {
+                    Tags = new List<Tag>
+                    {
+                        new Tag {Name = "Cats"},
+                        new Tag {Name =  "Dogs"},
+                    }
+                },
+                new Article()
+                {
+                    Tags = new List<Tag>
+                    {
+                        new Tag {Name = "Cats"},
+                        new Tag {Name =  "HotDogs"},
+                    }
+                },
+                new Article()
+                {
+                    Tags = new List<Tag>
+                    {
+                        new Tag {Name = "Cats"},
+                        new Tag {Name =  "HotDogs"},
+                    }
+                },
+                #endregion
+            };
+            var mockArticlesDbSet = articles.AsQueryable().BuildMockDbSet();
+
+            var mockContext = new Mock<BlogDbContext>();
+            mockContext.Setup(c => c.Set<Article>()).Returns(mockArticlesDbSet.Object);
+
+            var service = new ArticleService(new UnitOfWork(mockContext.Object), null, null, MapperProvider.GetMapper());
+            //Act
+            var result = await service.GetArticlesByTags(tags);
+            //Assert
+            Assert.Equal(count, result.Count());
         }
     }
 }
