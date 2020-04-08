@@ -12,18 +12,18 @@ namespace DAL.UnitOfWork
         public UnitOfWork(BlogDbContext context) { _context = context; }
 
         private readonly BlogDbContext _context;
-        private GenericRepository<Blog> _blogRepository;
-        private GenericRepository<Article> _articleRepository;
-        private GenericRepository<Comment> _commentRepository;
-        private GenericRepository<Tag> _tagRepository;
+        private IRepository<Blog> _blogRepository;
+        private IRepository<Article> _articleRepository;
+        private IRepository<Comment> _commentRepository;
+        private IRepository<Tag> _tagRepository;
 
-        public GenericRepository<Article> ArticleRepository
+        public virtual IRepository<Article> ArticleRepository
             => _articleRepository ??= new GenericRepository<Article>(_context);
-        public GenericRepository<Blog> BlogRepository
+        public IRepository<Blog> BlogRepository
             => _blogRepository ??= new GenericRepository<Blog>(_context);
-        public GenericRepository<Comment> CommentRepository
+        public IRepository<Comment> CommentRepository
             => _commentRepository ??= new GenericRepository<Comment>(_context);
-        public GenericRepository<Tag> TagRepository
+        public IRepository<Tag> TagRepository
             => _tagRepository ??= new GenericRepository<Tag>(_context);
 
         public void Save()
