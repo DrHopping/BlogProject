@@ -86,9 +86,9 @@ namespace BLL.Services
         public async Task DeleteArticle(int id, string token)
         {
             if (token == null) throw new ArgumentNullException(nameof(token));
-            var article = _unitOfWork.ArticleRepository.GetById(id);
+            var article = (await _unitOfWork.ArticleRepository.Get(a => a.ArticleId == id, includeProperties: "Blog")).FirstOrDefault();
             if (article == null) throw new ArgumentNullException(nameof(article), $"Couldn't find article with id {id}");
-            var ownerId = _unitOfWork.BlogRepository.GetById(article.BlogId).OwnerId;
+            var ownerId = article.Blog.OwnerId;
             var requesterId = _jwtFactory.GetUserIdClaim(token);
             if (!ownerId.Equals(requesterId))
             {
