@@ -13,6 +13,7 @@ namespace DAL.Interfaces
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
             string includeProperties = "");
         T GetById(int id);
+        Task<T> GetByIdAsync(int id);
         void Insert(T entity);
         void Delete(T entity);
         void Update(T entity);

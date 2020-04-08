@@ -7,10 +7,10 @@ namespace DAL.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
-        GenericRepository<Article> ArticleRepository { get; }
-        GenericRepository<Blog> BlogRepository { get; }
-        GenericRepository<Tag> TagRepository { get; }
-        GenericRepository<Comment> CommentRepository { get; }
+        IRepository<Article> ArticleRepository { get; }
+        IRepository<Blog> BlogRepository { get; }
+        IRepository<Tag> TagRepository { get; }
+        IRepository<Comment> CommentRepository { get; }
         void Save();
         Task SaveAsync();
     }
