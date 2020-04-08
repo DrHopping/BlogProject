@@ -11,8 +11,16 @@ using BLL.Services;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Interfaces;
+<<<<<<< Updated upstream
 using DAL.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
+=======
+using DAL.Repositories;
+using DAL.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+>>>>>>> Stashed changes
 using MockQueryable.Moq;
 using Moq;
 using Xunit;
@@ -92,8 +100,14 @@ namespace BlogTests.BLL
 
             var mockUof = new Mock<UnitOfWork>(mockContext.Object) { CallBase = true };
             var service = new ArticleService(mockUof.Object, mockJwtFactory.Object, null, MapperProvider.GetMapper());
+<<<<<<< Updated upstream
             var result = await service.CreateArticle(articleDto, "test");
 
+=======
+            //Act
+            var result = await service.CreateArticle(articleDto, "testToken");
+            //Assert
+>>>>>>> Stashed changes
             Assert.Equal(4, result.Tags.Count());
             Assert.Equal(5, tags.Count);
             mockArticlesDbSet.Verify(s => s.Add(It.IsAny<Article>()), Times.Once);
@@ -101,6 +115,41 @@ namespace BlogTests.BLL
             //mockUof.Verify(u => u.TagRepository.Get(null, null, ""), Times.Once);
         }
 
+<<<<<<< Updated upstream
 
+=======
+        [Fact]
+        public async Task DeleteArticle()
+        {
+            //Arrange
+            var articles = new List<Article>()
+            {
+                new Article() {ArticleId = 1, Blog = new Blog {OwnerId = "123"}}
+            };
+            var mockArticlesDbSet = articles.AsQueryable().BuildMockDbSet();
+
+            var mockJwtFactory = new Mock<IJwtFactory>();
+            mockJwtFactory.Setup(f => f.GetUserIdClaim(It.IsAny<string>())).Returns("123");
+
+            var mockContext = new Mock<BlogDbContext>();
+            mockContext.Setup(c => c.Set<Article>()).Returns(mockArticlesDbSet.Object);
+
+            var mockArticleRepo = new Mock<IRepository<Article>>();
+            mockArticleRepo.Setup(r => r.Delete(It.IsAny<Article>())).Callback<Article>(a => articles.Remove(a));
+            mockArticleRepo.Setup(r => r.Get(It.IsAny<Expression<Func<Article, bool>>>(),
+                    It.IsAny<Func<IQueryable<Article>, IOrderedQueryable<Article>>>(), It.IsAny<string>()))
+                .ReturnsAsync(new[] { articles[0] });
+            var mockUof = new Mock<IUnitOfWork>();
+            mockUof.Setup(s => s.ArticleRepository).Returns(mockArticleRepo.Object);
+
+            var service = new ArticleService(mockUof.Object, mockJwtFactory.Object, null, MapperProvider.GetMapper());
+
+            //Act
+            await service.DeleteArticle(1, "testToken");
+
+            //Assert
+            Assert.Empty(articles);
+        }
+>>>>>>> Stashed changes
     }
 }
