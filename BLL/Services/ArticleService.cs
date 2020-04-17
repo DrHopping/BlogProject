@@ -6,10 +6,10 @@ using AutoMapper;
 using BLL.DTO;
 using BLL.Exceptions;
 using BLL.Interfaces;
-using BLL.Mappers;
 using DAL.Entities;
 using DAL.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services
 {
@@ -32,7 +32,7 @@ namespace BLL.Services
         {
             if (articleDto.Tags != null && articleDto.Tags.Any())
             {
-                var existingTags = (await _unitOfWork.TagRepository.Get()).Select(t => t.Name);
+                var existingTags = (await _unitOfWork.TagRepository.GetAllAsync()).Select(t => t.Name);
                 var tagsToInsert = articleDto.Tags.Select(t => t.Name).Except(existingTags);
 
                 foreach (var tagName in tagsToInsert)
@@ -49,7 +49,7 @@ namespace BLL.Services
         {
             if (tags == null) throw new ArgumentNullException(nameof(tags));
             var tagNames = tags.Split(',');
-            var articles = await _unitOfWork.ArticleRepository.Get(includeProperties: "Tags");
+            var articles = await _unitOfWork.ArticleRepository.GetAllAsync("Tags");
             articles = articles.Where(a => !tagNames.Except(a.Tags.Select(t => t.Name)).Any());
             return _mapper.Map<IEnumerable<Article>, IEnumerable<ArticleDTO>>(articles);
         }
@@ -70,24 +70,19 @@ namespace BLL.Services
             if (article.Tags != null && article.Tags.Any())
             {
                 var tagsEntities =
-                    await _unitOfWork.TagRepository.Get(t => article.Tags.Select(tDto => tDto.Name).Contains(t.Name));
+                    await _unitOfWork.TagRepository.GetAllAsync(t => article.Tags.Select(tDto => tDto.Name).Contains(t.Name));
                 articleEntity.Tags = tagsEntities;
             }
 
-            _unitOfWork.ArticleRepository.Insert(articleEntity);
-            await _unitOfWork.SaveAsync();
-
-            var result = _mapper.Map<Article, ArticleDTO>((await _unitOfWork.ArticleRepository.Get(a => a.Title == article.Title && a.BlogId == article.BlogId)).FirstOrDefault());
-            if (result == null) throw new ArgumentException(nameof(result), $"Couldn't create article");
-
-            return result;
+            var result = await _unitOfWork.ArticleRepository.InsertAndSaveAsync(articleEntity);
+            return _mapper.Map<Article, ArticleDTO>(result); ;
         }
 
         public async Task DeleteArticle(int id, string token)
         {
             if (token == null) throw new ArgumentNullException(nameof(token));
-            var article = (await _unitOfWork.ArticleRepository.Get(a => a.Id == id, includeProperties: "Blog")).FirstOrDefault();
-            if (article == null) throw new ArgumentNullException(nameof(article), $"Couldn't find article with id {id}");
+            var article = await _unitOfWork.ArticleRepository.GetByIdAsync(id, "Blog");
+
             var ownerId = article.Blog.OwnerId;
             var requesterId = _jwtFactory.GetUserIdClaim(token);
             if (!ownerId.Equals(requesterId))
@@ -95,65 +90,56 @@ namespace BLL.Services
                 if (!_jwtFactory.GetUserRoleClaim(token).Equals("Moderator")) throw new NotEnoughRightsException();
             }
 
-            _unitOfWork.ArticleRepository.Delete(article);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.ArticleRepository.DeleteAndSaveAsync(article);
         }
 
         public async Task UpdateArticle(int id, ArticleDTO article, string token)
         {
             if (token == null) throw new ArgumentNullException(nameof(token));
             if (article == null) throw new ArgumentNullException(nameof(article));
-            var entity = _unitOfWork.ArticleRepository.GetById(id);
-            if (entity == null) throw new ArgumentNullException(nameof(article));
+            var entity = await _unitOfWork.ArticleRepository.GetByIdAsync(id, "Blog");
 
-            var ownerId = _unitOfWork.BlogRepository.GetById(entity.BlogId).OwnerId;
+            var ownerId = entity.Blog.OwnerId;
             var requesterId = _jwtFactory.GetUserIdClaim(token);
             if (!ownerId.Equals(requesterId)) throw new NotEnoughRightsException();
 
             entity.Title = article.Title;
             entity.Content = article.Content;
-            _unitOfWork.ArticleRepository.Update(entity);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.ArticleRepository.UpdateAndSaveAsync(entity);
         }
 
-        //TODO: Better db usage
         public async Task<ArticleDTO> GetArticleById(int id)
         {
-            var article = (await _unitOfWork.ArticleRepository.Get(a => a.Id == id, includeProperties: "Tags,Comments.User,Blog.Owner")).FirstOrDefault();
-            if (article == null) throw new ArgumentNullException(nameof(article), $"Couldn't find article with id {id}");
-            var result = _mapper.Map<Article, ArticleDTO>(article);
-
-            return result;
+            var article = await _unitOfWork.ArticleRepository.GetByIdAsync(id, "Tags,Comments.User,Blog.Owner");
+            return _mapper.Map<Article, ArticleDTO>(article);
         }
 
         public async Task<IEnumerable<CommentDTO>> GetCommentsByArticleId(int id)
         {
             var comments =
-                await _unitOfWork.CommentRepository.Get(a => a.ArticleId == id, includeProperties: "User");
+                await _unitOfWork.CommentRepository.GetAllAsync(a => a.ArticleId == id, "User");
             return _mapper.Map<IEnumerable<Comment>, IEnumerable<CommentDTO>>(comments);
         }
 
         public async Task<IEnumerable<TagDTO>> GetTagsByArticleId(int id)
         {
             var article =
-                (await _unitOfWork.ArticleRepository.Get(a => a.Id == id, includeProperties: "Tags")).FirstOrDefault();
-            if (article == null) throw new ArgumentNullException(nameof(article), $"Couldn't find article with id {id}");
+                await _unitOfWork.ArticleRepository.GetByIdAsync(id, "Tags");
             return _mapper.Map<IEnumerable<Tag>, IEnumerable<TagDTO>>(article.Tags);
         }
 
         public async Task<IEnumerable<ArticleDTO>> GetArticlesByTextFilter(string filter)
         {
-            var articles = await _unitOfWork.ArticleRepository.
-                Get(a => a.Content.ToLower().Contains(filter.ToLower())
-                         || a.Title.ToLower().Contains(filter.ToLower()));
-            if (articles == null) throw new ArgumentNullException(nameof(articles));
+            var articles = await _unitOfWork.ArticleRepository.GetAllAsync(a =>
+                a.Content.ToLower().Contains(filter.ToLower())
+                || a.Title.ToLower().Contains(filter.ToLower()));
+
             return _mapper.Map<IEnumerable<Article>, IEnumerable<ArticleDTO>>(articles);
         }
 
         public async Task<IEnumerable<ArticleDTO>> GetAllArticles()
         {
-            var articles = await _unitOfWork.ArticleRepository.Get(includeProperties: "Blog,Tags");
-            if (articles == null) throw new ArgumentNullException(nameof(articles));
+            var articles = await _unitOfWork.ArticleRepository.GetAllAsync("Blog,Tags");
             return _mapper.Map<IEnumerable<Article>, IEnumerable<ArticleDTO>>(articles);
         }
     }
