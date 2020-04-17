@@ -88,18 +88,16 @@ namespace BLL.Services
 
         public async Task<IEnumerable<CommentDTO>> GetAllComments()
         {
-            var comments = await _unitOfWork.CommentRepository.Get();
-            if (comments == null) throw new ArgumentNullException(nameof(comments));
+            var comments = await _unitOfWork.CommentRepository.GetAllAsync();
             var result = _mapper.Map<IEnumerable<Comment>, IEnumerable<CommentDTO>>(comments);
             return result;
         }
 
-        public async Task<IEnumerable<CommentDTO>> GetAllCommentsByUserId(string id)
+        public async Task<IEnumerable<CommentDTO>> GetAllCommentsByUserId(int id)
         {
-            if (id == null) throw new ArgumentNullException();
-            var userEntity = await _userManager.FindByIdAsync(id);
-            if (userEntity == null) throw new ArgumentNullException(nameof(userEntity), $"Couldn't find user with id {id}");
-            var comments = await _unitOfWork.CommentRepository.Get(c => c.UserId == id);
+            var userEntity = await _userManager.FindByIdAsync(id.ToString());
+            if (userEntity == null) throw new EntityNotFoundException(nameof(userEntity), id);
+            var comments = await _unitOfWork.CommentRepository.GetAllAsync(c => c.UserId == id);
             return _mapper.Map<IEnumerable<Comment>, IEnumerable<CommentDTO>>(comments);
         }
     }

@@ -11,6 +11,6 @@ namespace BLL.Services
         Task UpdateComment(int id, CommentDTO comment, string token);
         Task<CommentDTO> GetCommentById(int id);
         Task<IEnumerable<CommentDTO>> GetAllComments();
-        Task<IEnumerable<CommentDTO>> GetAllCommentsByUserId(string id);
+        Task<IEnumerable<CommentDTO>> GetAllCommentsByUserId(int id);
     }
 }
