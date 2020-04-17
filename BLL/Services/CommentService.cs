@@ -40,8 +40,7 @@ namespace BLL.Services
             var commentEntity = _mapper.Map<CommentDTO, Comment>(comment);
             commentEntity.UserId = userId;
 
-            _unitOfWork.CommentRepository.Insert(commentEntity);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.CommentRepository.InsertAndSaveAsync(commentEntity);
 
             var result = _mapper.Map<Comment, CommentDTO>(commentEntity);
             result.CreatorUsername = user.UserName;
@@ -50,8 +49,7 @@ namespace BLL.Services
 
         public async Task DeleteComment(int id, string token)
         {
-            var entity = _unitOfWork.CommentRepository.GetById(id);
-            if (entity == null) throw new ArgumentNullException(nameof(entity), $"Cant find comment with id {id}");
+            var entity = await _unitOfWork.CommentRepository.GetByIdAsync(id);
 
             var userId = _jwtFactory.GetUserIdClaim(token);
             if (entity.UserId != userId)
@@ -59,8 +57,7 @@ namespace BLL.Services
                 var userRole = _jwtFactory.GetUserRoleClaim(token);
                 if (!userRole.Equals("Moderator")) throw new NotEnoughRightsException();
             }
-            _unitOfWork.CommentRepository.Delete(entity);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.CommentRepository.DeleteAndSaveAsync(entity);
         }
 
         public async Task UpdateComment(int id, CommentDTO comment, string token)
@@ -68,20 +65,17 @@ namespace BLL.Services
             if (comment == null) throw new ArgumentNullException(nameof(comment));
             if (token == null) throw new ArgumentNullException(nameof(token));
 
-            var entity = _unitOfWork.CommentRepository.GetById(id);
-            if (entity == null) throw new ArgumentNullException(nameof(entity), $"Cant find comment with id {id}");
+            var entity = await _unitOfWork.CommentRepository.GetByIdAsync(id);
             var userId = _jwtFactory.GetUserIdClaim(token);
             if (!entity.UserId.Equals(userId)) throw new NotEnoughRightsException();
 
             if (comment.Content != null) entity.Content = comment.Content;
-            _unitOfWork.CommentRepository.Update(entity);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.CommentRepository.UpdateAndSaveAsync(entity);
         }
 
         public async Task<CommentDTO> GetCommentById(int id)
         {
             var comment = await _unitOfWork.CommentRepository.GetByIdAsync(id);
-            if (comment == null) throw new ArgumentNullException(nameof(comment), $"Cant find comment with id {id}");
             var result = _mapper.Map<Comment, CommentDTO>(comment);
             return result;
         }
