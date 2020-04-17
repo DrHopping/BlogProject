@@ -106,13 +106,13 @@ namespace DAL.Repositories
         public TEntity GetById(int id, string includeProperties = "")
         {
             var entity = FirstOrDefault(id, includeProperties);
-            return entity ?? throw new EntityNotFoundException(nameof(TEntity), id);
+            return entity ?? throw new EntityNotFoundException(nameof(TEntity), id.ToString());
         }
 
         public async Task<TEntity> GetByIdAsync(int id, string includeProperties = "")
         {
             var entity = await FirstOrDefaultAsync(id, includeProperties);
-            return entity ?? throw new EntityNotFoundException(nameof(TEntity), id);
+            return entity ?? throw new EntityNotFoundException(nameof(TEntity), id.ToString());
         }
 
         public IQueryable<TEntity> GetAllIncluding(string includeProperties = "")
