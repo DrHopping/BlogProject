@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection.Metadata.Ecma335;
 using DAL.Entities.Base;
 
@@ -15,5 +16,7 @@ namespace DAL.Entities
         [ForeignKey("User")]
         public int UserId { get; set; }
         public User User { get; set; }
+        public DateTime LastUpdated { get; set; }
+
     }
 }

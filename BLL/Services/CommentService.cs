@@ -70,6 +70,7 @@ namespace BLL.Services
             if (!entity.UserId.Equals(userId)) throw new NotEnoughRightsException();
 
             if (comment.Content != null) entity.Content = comment.Content;
+            entity.LastUpdated = DateTime.Now;
             await _unitOfWork.CommentRepository.UpdateAndSaveAsync(entity);
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DAL.Entities.Base;
@@ -17,6 +18,7 @@ namespace DAL.Entities
         public Blog Blog { get; set; }
         public IEnumerable<Comment> Comments { get; set; }
         public IEnumerable<Tag> Tags { get; set; }
+        public DateTime LastUpdated { get; set; }
 
     }
 }

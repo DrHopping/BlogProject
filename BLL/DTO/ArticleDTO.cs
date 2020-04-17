@@ -14,5 +14,7 @@ namespace BLL.DTO
         public string AuthorUsername { get; set; }
         public IEnumerable<CommentDTO> Comments { get; set; }
         public IEnumerable<TagDTO> Tags { get; set; }
+        public DateTime LastUpdated { get; set; }
+
     }
 }

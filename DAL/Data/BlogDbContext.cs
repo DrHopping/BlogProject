@@ -25,6 +25,15 @@ namespace DAL.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Comment>()
+                .Property(b => b.LastUpdated)
+                .HasDefaultValueSql("GETDATE()");
+
+            modelBuilder.Entity<Article>()
+                .Property(b => b.LastUpdated)
+                .HasDefaultValueSql("GETDATE()");
+
             modelBuilder.Entity<Blog>()
                 .HasOne<User>(b => b.Owner)
                 .WithMany(u => u.Blogs)

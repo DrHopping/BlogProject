@@ -105,6 +105,7 @@ namespace BLL.Services
 
             entity.Title = article.Title;
             entity.Content = article.Content;
+            entity.LastUpdated = DateTime.Now;
             await _unitOfWork.ArticleRepository.UpdateAndSaveAsync(entity);
         }
 
