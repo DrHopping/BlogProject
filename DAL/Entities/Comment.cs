@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection.Metadata.Ecma335;
+using DAL.Entities.Base;
 
 namespace DAL.Entities
 {
-    public class Comment
+    public class Comment : EntityBase<int>
     {
-        public int CommentId { get; set; }
         public string Content { get; set; }
 
         [ForeignKey("Article")]

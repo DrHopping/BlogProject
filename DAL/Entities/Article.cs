@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Reflection.Metadata.Ecma335;
+using DAL.Entities.Base;
 
 namespace DAL.Entities
 {
-    public class Article
+    public class Article : EntityBase<int>
     {
-        public int ArticleId { get; set; }
         [MaxLength(100)]
         public string Title { get; set; }
         [MaxLength(5000)]

@@ -84,7 +84,7 @@ namespace BLL.Services
 
         public async Task<BlogDTO> GetBlogById(int id)
         {
-            var blog = (await _unitOfWork.BlogRepository.Get((b => b.BlogId == id), includeProperties: "Articles,Owner")).FirstOrDefault();
+            var blog = (await _unitOfWork.BlogRepository.Get((b => b.Id == id), includeProperties: "Articles,Owner")).FirstOrDefault();
             if (blog == null) throw new ArgumentNullException(nameof(blog), "Couldn't find blog by id");
 
             var dto = _mapper.Map<Blog, BlogDTO>(blog);

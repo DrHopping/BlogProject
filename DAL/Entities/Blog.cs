@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using DAL.Entities.Base;
 
 namespace DAL.Entities
 {
-    public class Blog
+    public class Blog : EntityBase<int>
     {
-        public int BlogId { get; set; }
         public string Name { get; set; }
 
         [ForeignKey("User")]

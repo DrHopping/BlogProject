@@ -86,7 +86,7 @@ namespace BLL.Services
         public async Task DeleteArticle(int id, string token)
         {
             if (token == null) throw new ArgumentNullException(nameof(token));
-            var article = (await _unitOfWork.ArticleRepository.Get(a => a.ArticleId == id, includeProperties: "Blog")).FirstOrDefault();
+            var article = (await _unitOfWork.ArticleRepository.Get(a => a.Id == id, includeProperties: "Blog")).FirstOrDefault();
             if (article == null) throw new ArgumentNullException(nameof(article), $"Couldn't find article with id {id}");
             var ownerId = article.Blog.OwnerId;
             var requesterId = _jwtFactory.GetUserIdClaim(token);
@@ -119,7 +119,7 @@ namespace BLL.Services
         //TODO: Better db usage
         public async Task<ArticleDTO> GetArticleById(int id)
         {
-            var article = (await _unitOfWork.ArticleRepository.Get(a => a.ArticleId == id, includeProperties: "Tags,Comments.User,Blog.Owner")).FirstOrDefault();
+            var article = (await _unitOfWork.ArticleRepository.Get(a => a.Id == id, includeProperties: "Tags,Comments.User,Blog.Owner")).FirstOrDefault();
             if (article == null) throw new ArgumentNullException(nameof(article), $"Couldn't find article with id {id}");
             var result = _mapper.Map<Article, ArticleDTO>(article);
 
@@ -136,7 +136,7 @@ namespace BLL.Services
         public async Task<IEnumerable<TagDTO>> GetTagsByArticleId(int id)
         {
             var article =
-                (await _unitOfWork.ArticleRepository.Get(a => a.ArticleId == id, includeProperties: "Tags")).FirstOrDefault();
+                (await _unitOfWork.ArticleRepository.Get(a => a.Id == id, includeProperties: "Tags")).FirstOrDefault();
             if (article == null) throw new ArgumentNullException(nameof(article), $"Couldn't find article with id {id}");
             return _mapper.Map<IEnumerable<Tag>, IEnumerable<TagDTO>>(article.Tags);
         }
