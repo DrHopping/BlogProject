@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using BLL.DTO;
-using BLL.Mappers;
 using DAL.Entities;
 using DAL.Interfaces;
 
@@ -22,7 +21,7 @@ namespace BLL.Services
 
         public async Task<IEnumerable<TagDTO>> GetAllTags()
         {
-            return _mapper.Map<IEnumerable<Tag>, IEnumerable<TagDTO>>(await _unitOfWork.TagRepository.Get());
+            return _mapper.Map<IEnumerable<Tag>, IEnumerable<TagDTO>>(await _unitOfWork.TagRepository.GetAllAsync());
         }
 
         public async Task<TagDTO> GetTagById(int id)
