@@ -5,7 +5,6 @@ using AutoMapper;
 using BLL.DTO;
 using BLL.Exceptions;
 using BLL.Interfaces;
-using BLL.Mappers;
 using DAL.Entities;
 using DAL.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -35,8 +34,7 @@ namespace BLL.Services
             if (token == null) throw new ArgumentNullException(nameof(token));
 
             var userId = _jwtFactory.GetUserIdClaim(token);
-            if (userId == null) throw new ArgumentNullException(nameof(userId));
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null) throw new ArgumentNullException(nameof(user));
 
             var commentEntity = _mapper.Map<CommentDTO, Comment>(comment);
@@ -56,7 +54,6 @@ namespace BLL.Services
             if (entity == null) throw new ArgumentNullException(nameof(entity), $"Cant find comment with id {id}");
 
             var userId = _jwtFactory.GetUserIdClaim(token);
-            if (userId == null) throw new ArgumentNullException(nameof(userId));
             if (entity.UserId != userId)
             {
                 var userRole = _jwtFactory.GetUserRoleClaim(token);
@@ -74,7 +71,6 @@ namespace BLL.Services
             var entity = _unitOfWork.CommentRepository.GetById(id);
             if (entity == null) throw new ArgumentNullException(nameof(entity), $"Cant find comment with id {id}");
             var userId = _jwtFactory.GetUserIdClaim(token);
-            if (userId == null) throw new ArgumentNullException(nameof(userId));
             if (!entity.UserId.Equals(userId)) throw new NotEnoughRightsException();
 
             if (comment.Content != null) entity.Content = comment.Content;
@@ -96,6 +92,15 @@ namespace BLL.Services
             if (comments == null) throw new ArgumentNullException(nameof(comments));
             var result = _mapper.Map<IEnumerable<Comment>, IEnumerable<CommentDTO>>(comments);
             return result;
+        }
+
+        public async Task<IEnumerable<CommentDTO>> GetAllCommentsByUserId(string id)
+        {
+            if (id == null) throw new ArgumentNullException();
+            var userEntity = await _userManager.FindByIdAsync(id);
+            if (userEntity == null) throw new ArgumentNullException(nameof(userEntity), $"Couldn't find user with id {id}");
+            var comments = await _unitOfWork.CommentRepository.Get(c => c.UserId == id);
+            return _mapper.Map<IEnumerable<Comment>, IEnumerable<CommentDTO>>(comments);
         }
     }
 }

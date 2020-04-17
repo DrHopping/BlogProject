@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace DAL.Entities
 {
-    public class User : IdentityUser
+    public class User : IdentityUser<int>
     {
         public IEnumerable<Comment> Comments { get; set; }
         public IEnumerable<Blog> Blogs { get; set; }

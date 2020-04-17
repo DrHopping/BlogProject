@@ -5,7 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Data
 {
-    public class BlogDbContext : IdentityDbContext<User>
+    public class BlogDbContext : IdentityDbContext<User, IdentityRole<int>, int,
+        IdentityUserClaim<int>, IdentityUserRole<int>, IdentityUserLogin<int>,
+        IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
         public virtual DbSet<Article> Articles { get; set; }
         public virtual DbSet<Blog> Blogs { get; set; }

@@ -10,7 +10,7 @@ namespace BLL.Interfaces
         JwtSecurityToken DecodeToken(string token);
         Task<string> GenerateEncodedToken(string userName, ClaimsIdentity identity);
         Task<ClaimsIdentity> GenerateClaimsIdentity(User user);
-        string GetUserIdClaim(string token);
+        int GetUserIdClaim(string token);
         string GetUserRoleClaim(string token);
     }
 }

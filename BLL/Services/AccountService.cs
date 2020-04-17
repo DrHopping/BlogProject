@@ -6,8 +6,6 @@ using AutoMapper;
 using BLL.DTO;
 using BLL.Exceptions;
 using BLL.Interfaces;
-using BLL.Mappers;
-using Castle.Components.DictionaryAdapter;
 using DAL.Entities;
 using DAL.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -33,9 +31,7 @@ namespace BLL.Services
         {
             if (await _userManager.FindByEmailAsync(userDto.Email) != null) throw new EmailAlreadyTakenException();
             if (await _userManager.FindByNameAsync(userDto.UserName) != null) throw new NameAlreadyTakenException();
-
             var user = _mapper.Map<UserDTO, User>(userDto);
-
             var result = await _userManager.CreateAsync(user, userDto.Password);
             return result.Succeeded ? await _userManager.FindByNameAsync(user.UserName) : null;
         }
@@ -43,7 +39,7 @@ namespace BLL.Services
         private async Task<UserDTO> RegisterToRole(string role, UserDTO userDto)
         {
             var user = await CreateUser(userDto);
-            if (user == null) throw new ArgumentNullException(nameof(user), "Couldn't create user");
+            if (user == null) throw new ArgumentNullException("Couldn't create user");
             await _userManager.AddToRoleAsync(user, role);
             return _mapper.Map<User, UserDTO>(user);
         }
@@ -58,12 +54,11 @@ namespace BLL.Services
         public async Task<IEnumerable<UserDTO>> GetAllUsers()
             => _mapper.Map<IEnumerable<User>, IEnumerable<UserDTO>>(await _userManager.Users.ToListAsync());
 
-        public async Task<UserDTO> GetUserById(string id, string token)
+        public async Task<UserDTO> GetUserById(int id, string token)
         {
-            if (id == null) throw new ArgumentNullException(nameof(id));
             if (token == null) throw new ArgumentNullException(nameof(token));
 
-            var user = await _userManager.FindByIdAsync(id);
+            var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null) throw new ArgumentNullException(nameof(user), $"Couldn't find user with id {id}");
 
             var requesterId = _jwtFactory.GetUserIdClaim(token);
@@ -86,12 +81,11 @@ namespace BLL.Services
             }
         }
 
-        public async Task<bool> DeleteUser(string id, string token)
+        public async Task<bool> DeleteUser(int id, string token)
         {
-            if (id == null) throw new ArgumentNullException(nameof(id));
             if (token == null) throw new ArgumentNullException(nameof(token));
 
-            var user = await _userManager.FindByIdAsync(id);
+            var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null) throw new ArgumentNullException(nameof(user), $"Couldn't find user with id {id}");
 
             var requesterId = _jwtFactory.GetUserIdClaim(token);
@@ -105,7 +99,7 @@ namespace BLL.Services
             throw new NotEnoughRightsException();
         }
 
-        public async Task<bool> UpdateUser(string id, UserDTO user, string token)
+        public async Task<bool> UpdateUser(int id, UserDTO user, string token)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
             if (user.UserName == null && user.Email == null) throw new ArgumentNullException(nameof(user));
@@ -113,8 +107,8 @@ namespace BLL.Services
             var requesterId = _jwtFactory.GetUserIdClaim(token);
             var requesterRole = _jwtFactory.GetUserRoleClaim(token);
 
-            var userEntity = await _userManager.FindByIdAsync(id);
-            if (userEntity == null) throw new ArgumentNullException(nameof(userEntity), $"Couldn't find user with id {id}");
+            var userEntity = await _userManager.FindByIdAsync(id.ToString());
+            if (userEntity == null) throw new EntityNotFoundException(nameof(userEntity), id.ToString());
 
             if (requesterId != id && requesterRole != "Admin") throw new NotEnoughRightsException();
 
@@ -135,7 +129,7 @@ namespace BLL.Services
 
         }
 
-        public async Task<bool> ChangePassword(string id, PasswordDTO password, string token)
+        public async Task<bool> ChangePassword(int id, PasswordDTO password, string token)
         {
             if (password == null) throw new ArgumentNullException(nameof(password));
             if (password.NewPassword == null) throw new ArgumentNullException(nameof(password.NewPassword));
@@ -143,31 +137,14 @@ namespace BLL.Services
 
             var requesterId = _jwtFactory.GetUserIdClaim(token);
             var requesterRole = _jwtFactory.GetUserRoleClaim(token);
-            var userEntity = await _userManager.FindByIdAsync(id);
-            if (userEntity == null) throw new ArgumentNullException(nameof(userEntity), $"Couldn't find user with id {id}");
+            var userEntity = await _userManager.FindByIdAsync(id.ToString());
+            if (userEntity == null) throw new EntityNotFoundException(nameof(userEntity), id.ToString());
 
             if (requesterId != id && requesterRole != "Admin") throw new NotEnoughRightsException();
 
             bool checkPassword = await _userManager.CheckPasswordAsync(userEntity, password.OldPassword);
             if (checkPassword == false) throw new ArgumentException(nameof(password));
             return (await _userManager.ChangePasswordAsync(userEntity, password.OldPassword, password.NewPassword)).Succeeded;
-        }
-
-        public async Task<IEnumerable<BlogDTO>> GetAllBlogsByUserId(string id)
-        {
-            var userEntity = await _userManager.FindByIdAsync(id);
-            if (userEntity == null) throw new ArgumentNullException(nameof(userEntity), $"Couldn't find user with id {id}");
-            var blogs = await _unitOfWork.BlogRepository.Get(b => b.OwnerId == id);
-            return _mapper.Map<IEnumerable<Blog>, IEnumerable<BlogDTO>>(blogs);
-        }
-
-        public async Task<IEnumerable<CommentDTO>> GetAllCommentsByUserId(string id)
-        {
-            if (id == null) throw new ArgumentNullException();
-            var userEntity = await _userManager.FindByIdAsync(id);
-            if (userEntity == null) throw new ArgumentNullException(nameof(userEntity), $"Couldn't find user with id {id}");
-            var comments = await _unitOfWork.CommentRepository.Get(c => c.UserId == id);
-            return _mapper.Map<IEnumerable<Comment>, IEnumerable<CommentDTO>>(comments);
         }
     }
 }
