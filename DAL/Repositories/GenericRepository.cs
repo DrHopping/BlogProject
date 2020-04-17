@@ -21,7 +21,6 @@ namespace DAL.Repositories
             _context = context;
             _dbSet = context.Set<TEntity>();
         }
-
         public void Delete(TEntity entity)
         {
             if (_context.Entry(entity).State == EntityState.Detached)
@@ -30,17 +29,64 @@ namespace DAL.Repositories
             }
             _dbSet.Remove(entity);
         }
-
+        public void DeleteAndSave(TEntity entity)
+        {
+            if (_context.Entry(entity).State == EntityState.Detached)
+            {
+                _dbSet.Attach(entity);
+            }
+            _dbSet.Remove(entity);
+            _context.SaveChanges();
+        }
+        public async Task DeleteAndSaveAsync(TEntity entity)
+        {
+            if (_context.Entry(entity).State == EntityState.Detached)
+            {
+                _dbSet.Attach(entity);
+            }
+            _dbSet.Remove(entity);
+            await _context.SaveChangesAsync();
+        }
         public TEntity Update(TEntity entity)
         {
             _dbSet.Attach(entity);
             _context.Entry(entity).State = EntityState.Modified;
             return entity;
         }
+        public TEntity UpdateAndSave(TEntity entity)
+        {
+            _dbSet.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
+            _context.SaveChanges();
+            return entity;
+        }
+
+        public async Task<TEntity> UpdateAndSaveAsync(TEntity entity)
+        {
+            _dbSet.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return entity;
+        }
 
         public TEntity Insert(TEntity entity)
         {
-            return _dbSet.Add(entity).Entity;
+            var result = _dbSet.Add(entity).Entity;
+            return result;
+        }
+
+        public TEntity InsertAndSave(TEntity entity)
+        {
+            var result = _dbSet.Add(entity).Entity;
+            _context.SaveChanges();
+            return result;
+        }
+
+        public async Task<TEntity> InsertAndSaveAsync(TEntity entity)
+        {
+            var result = _dbSet.Add(entity).Entity;
+            await _context.SaveChangesAsync();
+            return result;
         }
 
         public int InsertAndGetId(TEntity entity)
@@ -50,28 +96,33 @@ namespace DAL.Repositories
             return entity.Id;
         }
 
-        public TEntity GetById(int id, params Expression<Func<TEntity, object>>[] propertySelectors)
+        public async Task<int> InsertAndGetIdAsync(TEntity entity)
         {
-            var entity = FirstOrDefault(id, propertySelectors);
+            entity = Insert(entity);
+            await _context.SaveChangesAsync();
+            return entity.Id;
+        }
+
+        public TEntity GetById(int id, string includeProperties = "")
+        {
+            var entity = FirstOrDefault(id, includeProperties);
             return entity ?? throw new EntityNotFoundException(nameof(TEntity), id);
         }
 
-        public async Task<TEntity> GetByIdAsync(int id, params Expression<Func<TEntity, object>>[] propertySelectors)
+        public async Task<TEntity> GetByIdAsync(int id, string includeProperties = "")
         {
-            var entity = await FirstOrDefaultAsync(id, propertySelectors);
+            var entity = await FirstOrDefaultAsync(id, includeProperties);
             return entity ?? throw new EntityNotFoundException(nameof(TEntity), id);
         }
 
-        public IQueryable<TEntity> GetAllIncluding(params Expression<Func<TEntity, object>>[] propertySelectors)
+        public IQueryable<TEntity> GetAllIncluding(string includeProperties = "")
         {
             IQueryable<TEntity> query = _dbSet;
 
-            if (!propertySelectors.IsNullOrEmpty())
+            foreach (var includeProperty in includeProperties.Split
+                (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                foreach (var propertySelector in propertySelectors)
-                {
-                    query = query.Include(propertySelector);
-                }
+                query = query.Include(includeProperty);
             }
             return query;
         }
@@ -81,54 +132,54 @@ namespace DAL.Repositories
             return GetAllIncluding();
         }
 
-        public IEnumerable<TEntity> GetAll(params Expression<Func<TEntity, object>>[] propertySelectors)
+        public IEnumerable<TEntity> GetAll(string includeProperties = "")
         {
-            return GetAllIncluding(propertySelectors).ToList();
+            return GetAllIncluding(includeProperties).ToList();
         }
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync(params Expression<Func<TEntity, object>>[] propertySelectors)
+        public async Task<IEnumerable<TEntity>> GetAllAsync(string includeProperties = "")
         {
-            return await GetAllIncluding(propertySelectors).ToListAsync();
+            return await GetAllIncluding(includeProperties).ToListAsync();
         }
 
-        public IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] propertySelectors)
+        public IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate, string includeProperties = "")
         {
-            return GetAllIncluding(propertySelectors).Where(predicate).ToList();
+            return GetAllIncluding(includeProperties).Where(predicate).ToList();
         }
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] propertySelectors)
+        public async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate, string includeProperties = "")
         {
-            return await GetAllIncluding(propertySelectors).Where(predicate).ToListAsync();
+            return await GetAllIncluding(includeProperties).Where(predicate).ToListAsync();
         }
 
-        public TEntity Single(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] propertySelectors)
+        public TEntity Single(Expression<Func<TEntity, bool>> predicate, string includeProperties = "")
         {
-            return GetAllIncluding(propertySelectors).Single(predicate);
+            return GetAllIncluding(includeProperties).Single(predicate);
         }
 
-        public async Task<TEntity> SingleAsync(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] propertySelectors)
+        public async Task<TEntity> SingleAsync(Expression<Func<TEntity, bool>> predicate, string includeProperties = "")
         {
-            return await GetAllIncluding(propertySelectors).SingleAsync(predicate);
+            return await GetAllIncluding(includeProperties).SingleAsync(predicate);
         }
 
-        public TEntity FirstOrDefault(int id, params Expression<Func<TEntity, object>>[] propertySelectors)
+        public TEntity FirstOrDefault(int id, string includeProperties = "")
         {
-            return GetAllIncluding(propertySelectors).FirstOrDefault(entity => entity.Id == id);
+            return GetAllIncluding(includeProperties).FirstOrDefault(entity => entity.Id == id);
         }
 
-        public async Task<TEntity> FirstOrDefaultAsync(int id, params Expression<Func<TEntity, object>>[] propertySelectors)
+        public async Task<TEntity> FirstOrDefaultAsync(int id, string includeProperties = "")
         {
-            return await GetAllIncluding(propertySelectors).FirstOrDefaultAsync(entity => entity.Id == id);
+            return await GetAllIncluding(includeProperties).FirstOrDefaultAsync(entity => entity.Id == id);
         }
 
-        public async Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] propertySelectors)
+        public async Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, string includeProperties = "")
         {
-            return await GetAllIncluding(propertySelectors).FirstOrDefaultAsync(predicate);
+            return await GetAllIncluding(includeProperties).FirstOrDefaultAsync(predicate);
         }
 
-        public TEntity FirstOrDefault(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] propertySelectors)
+        public TEntity FirstOrDefault(Expression<Func<TEntity, bool>> predicate, string includeProperties = "")
         {
-            return GetAllIncluding(propertySelectors).FirstOrDefault(predicate);
+            return GetAllIncluding(includeProperties).FirstOrDefault(predicate);
         }
 
 

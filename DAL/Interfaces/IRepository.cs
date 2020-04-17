@@ -10,23 +10,29 @@ namespace DAL.Interfaces
     public interface IRepository<TEntity> where TEntity : class, IEntity<int>
     {
         void Delete(TEntity entity);
+        void DeleteAndSave(TEntity entity);
+        Task DeleteAndSaveAsync(TEntity entity);
         TEntity Update(TEntity entity);
+        TEntity UpdateAndSave(TEntity entity);
+        Task<TEntity> UpdateAndSaveAsync(TEntity entity);
         TEntity Insert(TEntity entity);
+        TEntity InsertAndSave(TEntity entity);
+        Task<TEntity> InsertAndSaveAsync(TEntity entity);
         int InsertAndGetId(TEntity entity);
-        TEntity GetById(int id, params Expression<Func<TEntity, object>>[] propertySelectors);
-        Task<TEntity> GetByIdAsync(int id, params Expression<Func<TEntity, object>>[] propertySelectors);
-        IQueryable<TEntity> GetAllIncluding(params Expression<Func<TEntity, object>>[] propertySelectors);
+        TEntity GetById(int id, string includeProperties = "");
+        Task<TEntity> GetByIdAsync(int id, string includeProperties = "");
+        IQueryable<TEntity> GetAllIncluding(string includeProperties = "");
         IQueryable<TEntity> GetAllQueryable();
-        IEnumerable<TEntity> GetAll(params Expression<Func<TEntity, object>>[] propertySelectors);
-        Task<IEnumerable<TEntity>> GetAllAsync(params Expression<Func<TEntity, object>>[] propertySelectors);
-        IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] propertySelectors);
-        Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] propertySelectors);
-        TEntity Single(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] propertySelectors);
-        Task<TEntity> SingleAsync(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] propertySelectors);
-        TEntity FirstOrDefault(int id, params Expression<Func<TEntity, object>>[] propertySelectors);
-        Task<TEntity> FirstOrDefaultAsync(int id, params Expression<Func<TEntity, object>>[] propertySelectors);
-        Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] propertySelectors);
-        TEntity FirstOrDefault(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] propertySelectors);
+        IEnumerable<TEntity> GetAll(string includeProperties = "");
+        Task<IEnumerable<TEntity>> GetAllAsync(string includeProperties = "");
+        IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate, string includeProperties = "");
+        Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate, string includeProperties = "");
+        TEntity Single(Expression<Func<TEntity, bool>> predicate, string includeProperties = "");
+        Task<TEntity> SingleAsync(Expression<Func<TEntity, bool>> predicate, string includeProperties = "");
+        TEntity FirstOrDefault(int id, string includeProperties = "");
+        Task<TEntity> FirstOrDefaultAsync(int id, string includeProperties = "");
+        Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, string includeProperties = "");
+        TEntity FirstOrDefault(Expression<Func<TEntity, bool>> predicate, string includeProperties = "");
         void Dispose();
     }
 }
