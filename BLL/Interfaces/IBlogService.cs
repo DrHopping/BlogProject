@@ -12,6 +12,6 @@ namespace BLL.Services
         Task<BlogDTO> GetBlogById(int id);
         Task<IEnumerable<BlogDTO>> GetAllBlogs();
         Task<IEnumerable<ArticleDTO>> GetAllArticlesByBlogId(int id);
-        Task<IEnumerable<BlogDTO>> GetAllBlogsByUserId(string id);
+        Task<IEnumerable<BlogDTO>> GetAllBlogsByUserId(int id);
     }
 }

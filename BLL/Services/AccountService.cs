@@ -108,7 +108,7 @@ namespace BLL.Services
             var requesterRole = _jwtFactory.GetUserRoleClaim(token);
 
             var userEntity = await _userManager.FindByIdAsync(id.ToString());
-            if (userEntity == null) throw new EntityNotFoundException(nameof(userEntity), id.ToString());
+            if (userEntity == null) throw new EntityNotFoundException(nameof(userEntity), id);
 
             if (requesterId != id && requesterRole != "Admin") throw new NotEnoughRightsException();
 
@@ -138,7 +138,7 @@ namespace BLL.Services
             var requesterId = _jwtFactory.GetUserIdClaim(token);
             var requesterRole = _jwtFactory.GetUserRoleClaim(token);
             var userEntity = await _userManager.FindByIdAsync(id.ToString());
-            if (userEntity == null) throw new EntityNotFoundException(nameof(userEntity), id.ToString());
+            if (userEntity == null) throw new EntityNotFoundException(nameof(userEntity), id);
 
             if (requesterId != id && requesterRole != "Admin") throw new NotEnoughRightsException();
 

@@ -78,18 +78,18 @@ namespace BLL.Services
         {
             var claims = new ClaimsIdentity(new GenericIdentity(user.UserName, "Token"), new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id)
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             });
             var roles = await _userManager.GetRolesAsync(user);
             claims.AddClaims(roles.Select(r => new Claim(ClaimsIdentity.DefaultRoleClaimType, r)));
             return claims;
         }
 
-        public string GetUserIdClaim(string token)
+        public int GetUserIdClaim(string token)
         {
             if (token == null) throw new ArgumentNullException(nameof(token));
             var decodedToken = DecodeToken(token);
-            return decodedToken.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            return int.Parse(decodedToken.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
         }
 
         public string GetUserRoleClaim(string token)

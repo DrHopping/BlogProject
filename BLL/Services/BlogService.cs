@@ -27,11 +27,9 @@ namespace BLL.Services
             _userManager = userManager;
         }
 
-        private bool CheckRights(string token, string id)
+        private bool CheckRights(string token, int id)
         {
             var claimsId = _jwtFactory.GetUserIdClaim(token);
-            if (claimsId == null) throw new ArgumentNullException(nameof(claimsId));
-            if (id == null) throw new ArgumentNullException(nameof(id));
             return claimsId.Equals(id);
         }
 
@@ -89,9 +87,9 @@ namespace BLL.Services
             return blog.Articles;
         }
 
-        public async Task<IEnumerable<BlogDTO>> GetAllBlogsByUserId(string id)
+        public async Task<IEnumerable<BlogDTO>> GetAllBlogsByUserId(int id)
         {
-            var userEntity = await _userManager.FindByIdAsync(id);
+            var userEntity = await _userManager.FindByIdAsync(id.ToString());
             if (userEntity == null) throw new EntityNotFoundException(nameof(userEntity), id);
             var blogs = await _unitOfWork.BlogRepository.GetAllAsync(b => b.OwnerId == id);
             return _mapper.Map<IEnumerable<Blog>, IEnumerable<BlogDTO>>(blogs);
