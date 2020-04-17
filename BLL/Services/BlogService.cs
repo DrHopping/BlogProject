@@ -8,20 +8,23 @@ using BLL.Exceptions;
 using BLL.Interfaces;
 using DAL.Entities;
 using DAL.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace BLL.Services
 {
     public class BlogService : IBlogService
     {
+        private readonly UserManager<User> _userManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IJwtFactory _jwtFactory;
         private readonly IMapper _mapper;
 
-        public BlogService(IUnitOfWork unitOfWork, IJwtFactory jwtFactory, IMapper mapper)
+        public BlogService(IUnitOfWork unitOfWork, IJwtFactory jwtFactory, IMapper mapper, UserManager<User> userManager)
         {
             _unitOfWork = unitOfWork;
             _jwtFactory = jwtFactory;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         private bool CheckRights(string token, string id)
@@ -84,6 +87,14 @@ namespace BLL.Services
         {
             var blog = await GetBlogById(id);
             return blog.Articles;
+        }
+
+        public async Task<IEnumerable<BlogDTO>> GetAllBlogsByUserId(string id)
+        {
+            var userEntity = await _userManager.FindByIdAsync(id);
+            if (userEntity == null) throw new EntityNotFoundException(nameof(userEntity), id);
+            var blogs = await _unitOfWork.BlogRepository.GetAllAsync(b => b.OwnerId == id);
+            return _mapper.Map<IEnumerable<Blog>, IEnumerable<BlogDTO>>(blogs);
         }
     }
 }
