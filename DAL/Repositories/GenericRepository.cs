@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories
 {
-    public class GenericRepository<TEntity> : IRepository<TEntity>, IDisposable, IGenericRepository<TEntity> where TEntity : class, IEntity<int>
+    public class GenericRepository<TEntity> : IRepository<TEntity>, IDisposable where TEntity : class, IEntity<int>
     {
         private bool _disposed = false;
         private DbContext _context;
@@ -76,27 +76,27 @@ namespace DAL.Repositories
             return query;
         }
 
-        public IQueryable<TEntity> GetAll()
+        public IQueryable<TEntity> GetAllQueryable()
         {
             return GetAllIncluding();
         }
 
-        public List<TEntity> GetAllList(params Expression<Func<TEntity, object>>[] propertySelectors)
+        public IEnumerable<TEntity> GetAll(params Expression<Func<TEntity, object>>[] propertySelectors)
         {
             return GetAllIncluding(propertySelectors).ToList();
         }
 
-        public async Task<List<TEntity>> GetAllListAsync(params Expression<Func<TEntity, object>>[] propertySelectors)
+        public async Task<IEnumerable<TEntity>> GetAllAsync(params Expression<Func<TEntity, object>>[] propertySelectors)
         {
             return await GetAllIncluding(propertySelectors).ToListAsync();
         }
 
-        public List<TEntity> GetAllList(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] propertySelectors)
+        public IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] propertySelectors)
         {
             return GetAllIncluding(propertySelectors).Where(predicate).ToList();
         }
 
-        public async Task<List<TEntity>> GetAllListAsync(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] propertySelectors)
+        public async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] propertySelectors)
         {
             return await GetAllIncluding(propertySelectors).Where(predicate).ToListAsync();
         }
