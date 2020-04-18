@@ -57,6 +57,17 @@ namespace DAL.Data
                 .WithMany(u => u.Comments)
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ArticleTag>()
+                .HasKey(at => new { at.ArticleId, at.TagId });
+            modelBuilder.Entity<ArticleTag>()
+                .HasOne(at => at.Article)
+                .WithMany(p => p.ArticleTags)
+                .HasForeignKey(at => at.TagId);
+            modelBuilder.Entity<ArticleTag>()
+                .HasOne(at => at.Tag)
+                .WithMany(p => p.ArticleTags)
+                .HasForeignKey(at => at.ArticleId);
         }
     }
 }

@@ -59,7 +59,7 @@ namespace BLL.Services
             if (token == null) throw new ArgumentNullException(nameof(token));
 
             var user = await _userManager.FindByIdAsync(id.ToString());
-            if (user == null) throw new ArgumentNullException(nameof(user), $"Couldn't find user with id {id}");
+            if (user == null) throw new EntityNotFoundException(nameof(user), id);
 
             var requesterId = _jwtFactory.GetUserIdClaim(token);
             if (requesterId == id) return _mapper.Map<User, UserDTO>(user);
@@ -86,7 +86,7 @@ namespace BLL.Services
             if (token == null) throw new ArgumentNullException(nameof(token));
 
             var user = await _userManager.FindByIdAsync(id.ToString());
-            if (user == null) throw new ArgumentNullException(nameof(user), $"Couldn't find user with id {id}");
+            if (user == null) throw new EntityNotFoundException(nameof(user), id);
 
             var requesterId = _jwtFactory.GetUserIdClaim(token);
             if (requesterId == id) return (await _userManager.DeleteAsync(user)).Succeeded;

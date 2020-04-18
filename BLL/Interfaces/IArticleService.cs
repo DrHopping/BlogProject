@@ -7,7 +7,7 @@ namespace BLL.Services
     public interface IArticleService
     {
         Task<IEnumerable<ArticleDTO>> GetArticlesByTags(string tags);
-        Task<ArticleDTO> CreateArticle(ArticleDTO article, string token);
+        Task<ArticleDTO> CreateArticle(ArticleDTO articleDto, string token);
         Task DeleteArticle(int id, string token);
         Task UpdateArticle(int id, ArticleDTO article, string token);
         Task<ArticleDTO> GetArticleById(int id);

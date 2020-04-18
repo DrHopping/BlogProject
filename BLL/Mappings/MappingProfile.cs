@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Linq;
+using AutoMapper;
 using BLL.DTO;
 using DAL.Entities;
 
@@ -10,7 +11,7 @@ namespace BLL.Mappings
         {
             //Entity -> DTO
             CreateMap<Article, ArticleDTO>()
-                .ForMember(dto => dto.Tags, opt => opt.MapFrom(ent => ent.Tags))
+                .ForMember(dto => dto.Tags, opt => opt.MapFrom(ent => ent.ArticleTags.Select(at => at.Tag)))
                 .ForMember(dto => dto.Comments, opt => opt.MapFrom(ent => ent.Comments))
                 .ForMember(dto => dto.AuthorId, opt => opt.MapFrom(ent => ent.Blog.OwnerId))
                 .ForMember(dto => dto.AuthorUsername, opt => opt.MapFrom(ent => ent.Blog.Owner.UserName));

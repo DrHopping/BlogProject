@@ -51,7 +51,7 @@ namespace BlogTests.DAL
             mockContext.Setup(c => c.Set<Blog>()).Returns(data.Object);
             var repo = new GenericRepository<Blog>(mockContext.Object);
             //Act
-            var blogs = await repo.Get();
+            var blogs = await repo.GetAllAsync();
             //Assert
             Assert.Equal(3, blogs.Count());
         }
@@ -70,31 +70,10 @@ namespace BlogTests.DAL
             mockContext.Setup(c => c.Set<Blog>()).Returns(data.Object);
             var repo = new GenericRepository<Blog>(mockContext.Object);
             //Act
-            var blogs = await repo.Get(b => b.Name.Length > 2);
+            var blogs = await repo.GetAllAsync(b => b.Name.Length > 2);
             Assert.Equal(2, blogs.Count());
         }
 
-        [Fact]
-        public async Task Get_WithOrderBy_ReturnsSortedValues()
-        {
-            //Arrange
-            var data = new List<Blog>
-            {
-                new Blog{Name = "BBB"},
-                new Blog{Name = "ZZZ"},
-                new Blog{Name = "AAA"}
-            }.AsQueryable().BuildMockDbSet();
-            var mockContext = new Mock<BlogDbContext>();
-            mockContext.Setup(c => c.Set<Blog>()).Returns(data.Object);
-            var repo = new GenericRepository<Blog>(mockContext.Object);
-            //Act
-            var blogs = await repo.Get(orderBy: q => q.OrderBy(b => b.Name));
-            //Assert
-            Assert.Equal(3, blogs.Count());
-            Assert.Equal("AAA", blogs.ElementAt(0).Name);
-            Assert.Equal("BBB", blogs.ElementAt(1).Name);
-            Assert.Equal("ZZZ", blogs.ElementAt(2).Name);
-        }
 
     }
 }

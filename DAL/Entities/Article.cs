@@ -17,7 +17,7 @@ namespace DAL.Entities
         public int BlogId { get; set; }
         public Blog Blog { get; set; }
         public IEnumerable<Comment> Comments { get; set; }
-        public IEnumerable<Tag> Tags { get; set; }
+        public IEnumerable<ArticleTag> ArticleTags { get; set; }
         public DateTime LastUpdated { get; set; }
 
     }

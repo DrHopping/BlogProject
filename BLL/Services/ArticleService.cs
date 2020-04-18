@@ -28,54 +28,61 @@ namespace BLL.Services
             _mapper = mapper;
         }
 
-        private async Task CreateTags(ArticleDTO articleDto)
+        private async Task<IEnumerable<int>> CreateTagsAndReturnIds(ArticleDTO articleDto)
         {
-            if (articleDto.Tags != null && articleDto.Tags.Any())
+            var existingTags = (await _unitOfWork.TagRepository.GetAllAsync()).Select(t => t.Name);
+            var tagsToInsert = articleDto.Tags.Select(t => t.Name).Except(existingTags);
+
+            foreach (var tagName in tagsToInsert)
             {
-                var existingTags = (await _unitOfWork.TagRepository.GetAllAsync()).Select(t => t.Name);
-                var tagsToInsert = articleDto.Tags.Select(t => t.Name).Except(existingTags);
-
-                foreach (var tagName in tagsToInsert)
-                {
-                    var tagEntity = _mapper.Map<TagDTO, Tag>(new TagDTO { Name = tagName });
-                    _unitOfWork.TagRepository.Insert(tagEntity);
-                }
-
-                await _unitOfWork.SaveAsync();
+                var tagEntity = _mapper.Map<TagDTO, Tag>(new TagDTO { Name = tagName });
+                _unitOfWork.TagRepository.Insert(tagEntity);
             }
+
+            await _unitOfWork.SaveAsync();
+            var tagNames = articleDto.Tags.Select(t => t.Name);
+            var tagIds = (await _unitOfWork.TagRepository.GetAllAsync(t => tagNames.Contains(t.Name))).Select(t => t.Id);
+            return tagIds;
+
         }
 
-        public async Task<IEnumerable<ArticleDTO>> GetArticlesByTags(string tags)
+        public async Task<IEnumerable<ArticleDTO>> GetArticlesByTags(string tags) //done
         {
             if (tags == null) throw new ArgumentNullException(nameof(tags));
             var tagNames = tags.Split(',');
-            var articles = await _unitOfWork.ArticleRepository.GetAllAsync("Tags");
-            articles = articles.Where(a => !tagNames.Except(a.Tags.Select(t => t.Name)).Any());
+            var articles = (await _unitOfWork.TagRepository.GetAllAsync(t => tagNames.Contains(t.Name), "ArticleTags.Article"))
+                .SelectMany(t => t.ArticleTags.Select(at => at.Article));
             return _mapper.Map<IEnumerable<Article>, IEnumerable<ArticleDTO>>(articles);
         }
 
-        public async Task<ArticleDTO> CreateArticle(ArticleDTO article, string token)
+        public async Task<ArticleDTO> CreateArticle(ArticleDTO articleDto, string token)
         {
-            if (article == null) throw new ArgumentNullException(nameof(article));
-            if (article.Title == null) throw new ArgumentNullException(nameof(article.Title));
-            if (article.Content == null) throw new ArgumentNullException(nameof(article.Content));
+            if (articleDto == null) throw new ArgumentNullException(nameof(articleDto));
+            if (articleDto.Title == null) throw new ArgumentNullException(nameof(articleDto.Title));
+            if (articleDto.Content == null) throw new ArgumentNullException(nameof(articleDto.Content));
 
-            var ownerId = (await _unitOfWork.BlogRepository.GetByIdAsync(article.BlogId.GetValueOrDefault())).OwnerId;
+            var ownerId = (await _unitOfWork.BlogRepository.GetByIdAsync(articleDto.BlogId.GetValueOrDefault())).OwnerId;
             var requesterId = _jwtFactory.GetUserIdClaim(token);
             if (!ownerId.Equals(requesterId)) throw new NotEnoughRightsException();
 
-            var articleEntity = _mapper.Map<ArticleDTO, Article>(article);
-            await CreateTags(article);
+            var articleEntity = _mapper.Map<ArticleDTO, Article>(articleDto);
+            articleEntity = await _unitOfWork.ArticleRepository.InsertAndSaveAsync(articleEntity);
 
-            if (article.Tags != null && article.Tags.Any())
+            var articleId = articleEntity.Id;
+            if (articleDto.Tags != null && articleDto.Tags.Any())
             {
-                var tagsEntities =
-                    await _unitOfWork.TagRepository.GetAllAsync(t => article.Tags.Select(tDto => tDto.Name).Contains(t.Name));
-                articleEntity.Tags = tagsEntities;
+                var articleTags = new List<ArticleTag>();
+                var tagIds = await CreateTagsAndReturnIds(articleDto);
+                foreach (var tagId in tagIds)
+                {
+                    articleTags.Add(new ArticleTag { ArticleId = articleId, TagId = tagId });
+                }
+
+                articleEntity.ArticleTags = articleTags;
+                articleEntity = await _unitOfWork.ArticleRepository.UpdateAndSaveAsync(articleEntity);
             }
 
-            var result = await _unitOfWork.ArticleRepository.InsertAndSaveAsync(articleEntity);
-            return _mapper.Map<Article, ArticleDTO>(result); ;
+            return _mapper.Map<Article, ArticleDTO>(articleEntity); ;
         }
 
         public async Task DeleteArticle(int id, string token)
@@ -125,8 +132,8 @@ namespace BLL.Services
         public async Task<IEnumerable<TagDTO>> GetTagsByArticleId(int id)
         {
             var article =
-                await _unitOfWork.ArticleRepository.GetByIdAsync(id, "Tags");
-            return _mapper.Map<IEnumerable<Tag>, IEnumerable<TagDTO>>(article.Tags);
+                await _unitOfWork.ArticleRepository.GetByIdAsync(id, "ArticleTags.Tag");
+            return _mapper.Map<IEnumerable<Tag>, IEnumerable<TagDTO>>(article.ArticleTags.Select(at => at.Tag));
         }
 
         public async Task<IEnumerable<ArticleDTO>> GetArticlesByTextFilter(string filter)
@@ -140,7 +147,7 @@ namespace BLL.Services
 
         public async Task<IEnumerable<ArticleDTO>> GetAllArticles()
         {
-            var articles = await _unitOfWork.ArticleRepository.GetAllAsync("Blog,Tags");
+            var articles = await _unitOfWork.ArticleRepository.GetAllAsync("Blog,ArticleTags.Tag");
             return _mapper.Map<IEnumerable<Article>, IEnumerable<ArticleDTO>>(articles);
         }
     }

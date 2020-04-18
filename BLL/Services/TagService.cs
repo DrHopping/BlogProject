@@ -27,7 +27,6 @@ namespace BLL.Services
         public async Task<TagDTO> GetTagById(int id)
         {
             var tag = await _unitOfWork.TagRepository.GetByIdAsync(id);
-            if (tag == null) throw new ArgumentNullException(nameof(tag));
             return _mapper.Map<Tag, TagDTO>(tag);
         }
     }
