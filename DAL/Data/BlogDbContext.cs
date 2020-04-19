@@ -64,6 +64,10 @@ namespace DAL.Data
                 .HasOne(at => at.Tag)
                 .WithMany(p => p.ArticleTags)
                 .HasForeignKey(at => at.ArticleId);
+
+
+
+
         }
     }
 }

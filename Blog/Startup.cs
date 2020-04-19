@@ -96,6 +96,8 @@ namespace Blog
                     spa.UseAngularCliServer(npmScript: "start");
                 }
             });
+
+            app.CreateSeedData(Configuration).Wait();
         }
     }
 }

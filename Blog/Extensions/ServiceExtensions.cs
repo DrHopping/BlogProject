@@ -19,7 +19,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Blog.Extensions
 {
-    public static class ServiceInjectExtension
+    public static class ServiceExtensions
     {
         public static void InjectServices(this IServiceCollection services)
         {
