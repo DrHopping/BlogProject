@@ -10,6 +10,7 @@ namespace BLL.Models
     {
         public string Issuer { get; set; }
         public string Audience { get; set; }
+        public string Secret { get; set; }
         public DateTime Expiration => IssuedAt.Add(ValidFor);
         public DateTime NotBefore => DateTime.UtcNow;
         public DateTime IssuedAt => DateTime.UtcNow;

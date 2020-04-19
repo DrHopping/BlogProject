@@ -7,6 +7,7 @@ using BLL.Interfaces;
 using BLL.Models;
 using DAL.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 
 namespace BLL.Services
 {
@@ -16,11 +17,11 @@ namespace BLL.Services
         private readonly IJwtFactory _jwtFactory;
         private readonly JwtOptions _jwtOptions;
 
-        public AuthService(UserManager<User> userManager, IJwtFactory jwtFactory, JwtOptions jwtOptions)
+        public AuthService(UserManager<User> userManager, IJwtFactory jwtFactory, IOptions<JwtOptions> jwtOptions)
         {
             _userManager = userManager;
             _jwtFactory = jwtFactory;
-            _jwtOptions = jwtOptions;
+            _jwtOptions = jwtOptions.Value;
         }
 
         private async Task<ClaimsIdentity> GetClaimsIdentity(UserDTO user)
