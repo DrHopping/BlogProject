@@ -5,6 +5,6 @@ namespace BLL.Services
 {
     public interface IAuthService
     {
-        Task<object> Authenticate(UserDTO user);
+        Task<object> Authenticate(UserDTO userDto);
     }
 }

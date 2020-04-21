@@ -42,19 +42,47 @@ namespace Blog.Extensions
         public static void UseIdentity(this IServiceCollection services)
         {
             services.AddIdentity<User, IdentityRole<int>>(o =>
-            {
-                o.User.RequireUniqueEmail = true;
-                o.Password.RequiredLength = 6;
-                o.Password.RequireLowercase = true;
-                o.Password.RequireUppercase = false;
-                o.Password.RequireDigit = true;
-                o.Password.RequireNonAlphanumeric = false;
-            }).AddEntityFrameworkStores<BlogDbContext>()
+                {
+                    o.User.RequireUniqueEmail = true;
+                    o.Password.RequiredLength = 6;
+                    o.Password.RequireLowercase = true;
+                    o.Password.RequireUppercase = false;
+                    o.Password.RequireDigit = true;
+                    o.Password.RequireNonAlphanumeric = false;
+                }).AddEntityFrameworkStores<BlogDbContext>()
                 .AddDefaultTokenProviders();
         }
 
         public static void AddJwt(this IServiceCollection services, IConfiguration configuration)
         {
+
+            var appSettingsSection = configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+
+            // configure jwt authentication
+            var appSettings = appSettingsSection.Get<AppSettings>();
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            services.AddAuthentication(x =>
+                {
+                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(x =>
+                {
+                    x.RequireHttpsMetadata = false;
+                    x.SaveToken = true;
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                });
+
+            #region Old
+
+            /*
             var appSettingsSection = configuration.GetSection("AppSettings");
             var secret = appSettingsSection.Get<JwtOptions>().Secret;
             var key = Encoding.ASCII.GetBytes(secret);
@@ -64,50 +92,42 @@ namespace Blog.Extensions
             {
                 options.Secret = appSettingsSection["Secret"];
                 options.Audience = appSettingsSection["Audience"];
-                options.SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+                options.SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256Signature);
             });
 
-            services.AddAuthentication(x =>
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            }).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddJwtBearer(configureOptions =>
-                {
-                    configureOptions.ClaimsIssuer = appSettingsSection["Issuer"];
-                    configureOptions.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidIssuer = appSettingsSection["Issuer"],
-
-                        ValidateAudience = true,
-                        ValidAudience = appSettingsSection["Audience"],
-
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = signingKey,
-
-                        RequireExpirationTime = false,
-                        ValidateLifetime = true,
-                        ClockSkew = TimeSpan.Zero
-                    };
-
-                    configureOptions.Events = new JwtBearerEvents
-                    {
-                        OnTokenValidated = context =>
-                        {
-                            if (context.SecurityToken is JwtSecurityToken accessToken)
-                            {
-                                if (context.Principal.Identity is ClaimsIdentity identity)
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    //ValidIssuer = appSettingsSection["Issuer"],
+                    //ValidAudience = appSettingsSection["Audience"],
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = signingKey,
+                };
+                options.SaveToken = true;
+                /*                options.Events = new JwtBearerEvents
                                 {
-                                    identity.AddClaim(new Claim("access_token", accessToken.RawData));
-                                }
-                            }
+                                    OnMessageReceived = context =>
+                                    {
+                                        if (context.Request.Query.ContainsKey("access_token"))
+                                        {
+                                            context.Token = context.Request.Query["access_token"];
+                                        }
 
-                            return Task.CompletedTask;
-                        }
-                    };
-                    configureOptions.SaveToken = true;
-                });
+                                        return Task.CompletedTask;
+                                    }
+                                };#1#
+            });
+*/
+
+            #endregion
         }
 
     }

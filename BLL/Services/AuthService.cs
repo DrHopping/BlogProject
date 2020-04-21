@@ -1,5 +1,8 @@
 ﻿using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using BLL.DTO;
 using BLL.Exceptions;
@@ -8,6 +11,7 @@ using BLL.Models;
 using DAL.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BLL.Services
 {
@@ -16,11 +20,13 @@ namespace BLL.Services
         private readonly UserManager<User> _userManager;
         private readonly IJwtFactory _jwtFactory;
         private readonly JwtOptions _jwtOptions;
+        private readonly AppSettings _appSettings;
 
-        public AuthService(UserManager<User> userManager, IJwtFactory jwtFactory, IOptions<JwtOptions> jwtOptions)
+        public AuthService(UserManager<User> userManager, IJwtFactory jwtFactory, IOptions<JwtOptions> jwtOptions, IOptions<AppSettings> appSettings)
         {
             _userManager = userManager;
             _jwtFactory = jwtFactory;
+            _appSettings = appSettings.Value;
             _jwtOptions = jwtOptions.Value;
         }
 
@@ -33,7 +39,7 @@ namespace BLL.Services
             var userToVerify = await _userManager.FindByNameAsync(user.UserName);
             if (userToVerify == null)
             {
-                userToVerify = await _userManager.FindByEmailAsync(user.UserName);
+                userToVerify = await _userManager.FindByEmailAsync(user.Email);
                 if (userToVerify == null)
                 {
                     throw new WrongCredentialsException();
@@ -48,18 +54,19 @@ namespace BLL.Services
             throw new WrongCredentialsException();
         }
 
-        public async Task<object> Authenticate(UserDTO user)
+        public async Task<object> Authenticate(UserDTO userDto)
         {
-            if (user == null) throw new ArgumentNullException(nameof(user));
 
-            var identity = await GetClaimsIdentity(user);
+            if (userDto == null) throw new ArgumentNullException(nameof(userDto));
+
+            var identity = await GetClaimsIdentity(userDto);
             if (identity == null) throw new ArgumentNullException(nameof(identity));
 
-            var token = await _jwtFactory.GenerateEncodedToken(user.UserName, identity);
+            var token = await _jwtFactory.GenerateEncodedToken(userDto.UserName, identity);
             if (token == null) throw new ArgumentNullException(nameof(token));
             return new
             {
-                id = identity.FindFirst(ClaimTypes.NameIdentifier).Value,
+                id = identity.FindFirst(ClaimTypes.Name).Value,
                 auth_token = token,
                 expires_in = (int)_jwtOptions.ValidFor.TotalSeconds
             };

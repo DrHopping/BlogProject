@@ -3,28 +3,31 @@ using System.Threading.Tasks;
 using BLL.DTO;
 using BLL.Exceptions;
 using BLL.Services;
+using Blog.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
 
 namespace Blog.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
     [Authorize]
-    public class AccountsController : ControllerBase
+    [ApiController]
+    public class UserController : ControllerBase
     {
         private readonly IAccountService _accountService;
 
-        public AccountsController(IAccountService accountService)
+        public UserController(IAccountService accountService)
         {
             _accountService = accountService;
         }
 
         private string AuthInfo()
         {
-            var accessToken = User.FindFirst("access_token")?.Value;
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Split(' ')[1];
             if (accessToken == null) throw new ArgumentNullException("Couldn't get the token user authorized with");
             return accessToken;
         }
@@ -52,7 +55,7 @@ namespace Blog.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> CreateRegularUser([FromBody] UserDTO user)
+        private async Task<IActionResult> CreateRegularUser([FromBody] UserDTO user)
         {
             try
             {
