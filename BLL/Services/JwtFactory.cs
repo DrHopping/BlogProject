@@ -20,7 +20,7 @@ namespace BLL.Services
         private readonly AppSettings _appSettings;
         private readonly UserManager<User> _userManager;
 
-        public JwtFactory(IOptions<JwtOptions> jwtOptions, UserManager<User> userManager, IOptions<AppSettings> appSettings)
+        public JwtFactory(UserManager<User> userManager, IOptions<AppSettings> appSettings)
         {
             _userManager = userManager;
             _appSettings = appSettings.Value;

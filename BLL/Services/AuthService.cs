@@ -19,15 +19,11 @@ namespace BLL.Services
     {
         private readonly UserManager<User> _userManager;
         private readonly IJwtFactory _jwtFactory;
-        private readonly JwtOptions _jwtOptions;
-        private readonly AppSettings _appSettings;
 
-        public AuthService(UserManager<User> userManager, IJwtFactory jwtFactory, IOptions<JwtOptions> jwtOptions, IOptions<AppSettings> appSettings)
+        public AuthService(UserManager<User> userManager, IJwtFactory jwtFactory)
         {
             _userManager = userManager;
             _jwtFactory = jwtFactory;
-            _appSettings = appSettings.Value;
-            _jwtOptions = jwtOptions.Value;
         }
 
         private async Task<ClaimsIdentity> GetClaimsIdentity(UserDTO user)
@@ -68,7 +64,6 @@ namespace BLL.Services
             {
                 id = identity.FindFirst(ClaimTypes.Name).Value,
                 auth_token = token,
-                expires_in = (int)_jwtOptions.ValidFor.TotalSeconds
             };
         }
     }
