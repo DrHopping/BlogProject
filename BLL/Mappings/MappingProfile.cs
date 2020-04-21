@@ -27,7 +27,7 @@ namespace BLL.Mappings
             CreateMap<Tag, TagDTO>();
 
             CreateMap<User, UserDTO>()
-                .ForMember(dto => dto.UserId, opt => opt.MapFrom(ent => ent.Id))
+                .ForMember(dto => dto.Id, opt => opt.MapFrom(ent => ent.Id))
                 .ForMember(dto => dto.UserName, opt => opt.MapFrom(ent => ent.UserName))
                 .ForMember(dto => dto.Blogs, opt => opt.MapFrom(ent => ent.Blogs))
                 .ForMember(dto => dto.Comments, opt => opt.MapFrom(ent => ent.Comments))
