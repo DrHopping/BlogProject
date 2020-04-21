@@ -29,8 +29,8 @@ namespace BLL.Services
         }
         private async Task<User> CreateUser(UserDTO userDto)
         {
-            if (await _userManager.FindByEmailAsync(userDto.Email) != null) throw new EmailAlreadyTakenException();
-            if (await _userManager.FindByNameAsync(userDto.UserName) != null) throw new NameAlreadyTakenException();
+            if (await _userManager.FindByEmailAsync(userDto.Email) != null) throw new EmailAlreadyTakenException(userDto.Email);
+            if (await _userManager.FindByNameAsync(userDto.UserName) != null) throw new NameAlreadyTakenException(userDto.UserName);
             var user = _mapper.Map<UserDTO, User>(userDto);
             var result = await _userManager.CreateAsync(user, userDto.Password);
             return result.Succeeded ? await _userManager.FindByNameAsync(user.UserName) : null;
@@ -115,13 +115,13 @@ namespace BLL.Services
             if (user.UserName != null && !userEntity.UserName.Equals(user.UserName))
             {
                 var isNameTaken = await _userManager.FindByNameAsync(user.UserName);
-                if (isNameTaken != null) throw new NameAlreadyTakenException();
+                if (isNameTaken != null) throw new NameAlreadyTakenException(user.UserName);
                 userEntity.UserName = user.UserName;
             }
             else if (user.Email != null && !userEntity.Email.Equals(user.Email))
             {
                 var isEmailTaken = await _userManager.FindByEmailAsync(user.Email);
-                if (isEmailTaken != null) throw new NameAlreadyTakenException();
+                if (isEmailTaken != null) throw new EmailAlreadyTakenException(user.Email);
                 userEntity.Email = user.Email;
             }
 
