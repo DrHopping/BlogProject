@@ -8,7 +8,7 @@ namespace BLL.Services
     {
         Task<CommentDTO> AddComment(CommentDTO comment, string token);
         Task DeleteComment(int id, string token);
-        Task UpdateComment(int id, CommentDTO comment, string token);
+        Task UpdateComment(int id, CommentDTO commentDto, string token);
         Task<CommentDTO> GetCommentById(int id);
         Task<IEnumerable<CommentDTO>> GetAllComments();
         Task<IEnumerable<CommentDTO>> GetAllCommentsByUserId(int id);

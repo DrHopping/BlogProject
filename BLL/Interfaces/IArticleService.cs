@@ -9,7 +9,7 @@ namespace BLL.Services
         Task<IEnumerable<ArticleDTO>> GetArticlesByTags(string tags);
         Task<ArticleDTO> CreateArticle(ArticleDTO articleDto, string token);
         Task DeleteArticle(int id, string token);
-        Task UpdateArticle(int id, ArticleDTO article, string token);
+        Task UpdateArticle(int id, ArticleDTO articleDto, string token);
         Task<ArticleDTO> GetArticleById(int id);
         Task<IEnumerable<CommentDTO>> GetCommentsByArticleId(int id);
         Task<IEnumerable<TagDTO>> GetTagsByArticleId(int id);

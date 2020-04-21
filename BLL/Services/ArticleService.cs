@@ -46,7 +46,7 @@ namespace BLL.Services
 
         }
 
-        public async Task<IEnumerable<ArticleDTO>> GetArticlesByTags(string tags) //done
+        public async Task<IEnumerable<ArticleDTO>> GetArticlesByTags(string tags)
         {
             if (tags == null) throw new ArgumentNullException(nameof(tags));
             var tagNames = tags.Split(',');
@@ -57,11 +57,9 @@ namespace BLL.Services
 
         public async Task<ArticleDTO> CreateArticle(ArticleDTO articleDto, string token)
         {
-            if (articleDto == null) throw new ArgumentNullException(nameof(articleDto));
-            if (articleDto.Title == null) throw new ArgumentNullException(nameof(articleDto.Title));
-            if (articleDto.Content == null) throw new ArgumentNullException(nameof(articleDto.Content));
-
-            var ownerId = (await _unitOfWork.BlogRepository.GetByIdAsync(articleDto.BlogId.GetValueOrDefault())).OwnerId;
+            var blog = await _unitOfWork.BlogRepository.GetByIdAsync(articleDto.BlogId.GetValueOrDefault());
+            if (blog == null) throw new EntityNotFoundException(nameof(blog), articleDto.BlogId.GetValueOrDefault());
+            var ownerId = blog.OwnerId;
             var requesterId = _jwtFactory.GetUserIdClaim(token);
             if (!ownerId.Equals(requesterId)) throw new NotEnoughRightsException();
 
@@ -87,8 +85,8 @@ namespace BLL.Services
 
         public async Task DeleteArticle(int id, string token)
         {
-            if (token == null) throw new ArgumentNullException(nameof(token));
             var article = await _unitOfWork.ArticleRepository.GetByIdAsync(id, "Blog");
+            if (article == null) throw new EntityNotFoundException(nameof(article), id);
 
             var ownerId = article.Blog.OwnerId;
             var requesterId = _jwtFactory.GetUserIdClaim(token);
@@ -100,25 +98,25 @@ namespace BLL.Services
             await _unitOfWork.ArticleRepository.DeleteAndSaveAsync(article);
         }
 
-        public async Task UpdateArticle(int id, ArticleDTO article, string token)
+        public async Task UpdateArticle(int id, ArticleDTO articleDto, string token)
         {
-            if (token == null) throw new ArgumentNullException(nameof(token));
-            if (article == null) throw new ArgumentNullException(nameof(article));
-            var entity = await _unitOfWork.ArticleRepository.GetByIdAsync(id, "Blog");
+            var article = await _unitOfWork.ArticleRepository.GetByIdAsync(id, "Blog");
+            if (article == null) throw new EntityNotFoundException(nameof(article), id);
 
-            var ownerId = entity.Blog.OwnerId;
+            var ownerId = article.Blog.OwnerId;
             var requesterId = _jwtFactory.GetUserIdClaim(token);
             if (!ownerId.Equals(requesterId)) throw new NotEnoughRightsException();
 
-            entity.Title = article.Title;
-            entity.Content = article.Content;
-            entity.LastUpdated = DateTime.Now;
-            await _unitOfWork.ArticleRepository.UpdateAndSaveAsync(entity);
+            article.Title = articleDto.Title;
+            article.Content = articleDto.Content;
+            article.LastUpdated = DateTime.Now;
+            await _unitOfWork.ArticleRepository.UpdateAndSaveAsync(article);
         }
 
         public async Task<ArticleDTO> GetArticleById(int id)
         {
             var article = await _unitOfWork.ArticleRepository.GetByIdAsync(id, "Tags,Comments.User,Blog.Owner");
+            if (article == null) throw new EntityNotFoundException(nameof(article), id);
             return _mapper.Map<Article, ArticleDTO>(article);
         }
 
@@ -133,6 +131,7 @@ namespace BLL.Services
         {
             var article =
                 await _unitOfWork.ArticleRepository.GetByIdAsync(id, "ArticleTags.Tag");
+            if (article == null) throw new EntityNotFoundException(nameof(article), id);
             return _mapper.Map<IEnumerable<Tag>, IEnumerable<TagDTO>>(article.ArticleTags.Select(at => at.Tag));
         }
 

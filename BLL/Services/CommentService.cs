@@ -49,34 +49,38 @@ namespace BLL.Services
 
         public async Task DeleteComment(int id, string token)
         {
-            var entity = await _unitOfWork.CommentRepository.GetByIdAsync(id);
+            var comment = await _unitOfWork.CommentRepository.GetByIdAsync(id);
+            if (comment == null) throw new EntityNotFoundException(nameof(comment), id);
 
             var userId = _jwtFactory.GetUserIdClaim(token);
-            if (entity.UserId != userId)
+            if (comment.UserId != userId)
             {
                 var userRole = _jwtFactory.GetUserRoleClaim(token);
                 if (!userRole.Equals("Moderator")) throw new NotEnoughRightsException();
             }
-            await _unitOfWork.CommentRepository.DeleteAndSaveAsync(entity);
+            await _unitOfWork.CommentRepository.DeleteAndSaveAsync(comment);
         }
 
-        public async Task UpdateComment(int id, CommentDTO comment, string token)
+        public async Task UpdateComment(int id, CommentDTO commentDto, string token)
         {
-            if (comment == null) throw new ArgumentNullException(nameof(comment));
+            if (commentDto == null) throw new ArgumentNullException(nameof(commentDto));
             if (token == null) throw new ArgumentNullException(nameof(token));
 
-            var entity = await _unitOfWork.CommentRepository.GetByIdAsync(id);
-            var userId = _jwtFactory.GetUserIdClaim(token);
-            if (!entity.UserId.Equals(userId)) throw new NotEnoughRightsException();
+            var comment = await _unitOfWork.CommentRepository.GetByIdAsync(id);
+            if (comment == null) throw new EntityNotFoundException(nameof(comment), id);
 
-            if (comment.Content != null) entity.Content = comment.Content;
-            entity.LastUpdated = DateTime.Now;
-            await _unitOfWork.CommentRepository.UpdateAndSaveAsync(entity);
+            var userId = _jwtFactory.GetUserIdClaim(token);
+            if (!comment.UserId.Equals(userId)) throw new NotEnoughRightsException();
+
+            if (commentDto.Content != null) comment.Content = commentDto.Content;
+            comment.LastUpdated = DateTime.Now;
+            await _unitOfWork.CommentRepository.UpdateAndSaveAsync(comment);
         }
 
         public async Task<CommentDTO> GetCommentById(int id)
         {
             var comment = await _unitOfWork.CommentRepository.GetByIdAsync(id);
+            if (comment == null) throw new EntityNotFoundException(nameof(comment), id);
             var result = _mapper.Map<Comment, CommentDTO>(comment);
             return result;
         }

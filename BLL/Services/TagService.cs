@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using BLL.DTO;
+using BLL.Exceptions;
+using BLL.Exceptions.Base;
 using DAL.Entities;
 using DAL.Interfaces;
 
@@ -27,6 +29,7 @@ namespace BLL.Services
         public async Task<TagDTO> GetTagById(int id)
         {
             var tag = await _unitOfWork.TagRepository.GetByIdAsync(id);
+            if (tag == null) throw new EntityNotFoundException(nameof(Tag), id);
             return _mapper.Map<Tag, TagDTO>(tag);
         }
     }

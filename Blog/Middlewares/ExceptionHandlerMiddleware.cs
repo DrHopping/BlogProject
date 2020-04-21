@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using BLL.Exceptions;
+using BLL.Exceptions.Base;
 using Blog.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -15,7 +16,6 @@ namespace Blog.Middlewares
         {
             _logger = logger;
         }
-
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
@@ -39,11 +39,14 @@ namespace Blog.Middlewares
 
             switch (e)
             {
-                case EntityNotFoundException _:
+                case NotFoundException _:
                     statusCode = StatusCodes.Status404NotFound;
                     break;
-                case ArgumentException _:
+                case BadRequestException _:
                     statusCode = StatusCodes.Status400BadRequest;
+                    break;
+                case ForbiddenException _:
+                    statusCode = StatusCodes.Status403Forbidden;
                     break;
                 default:
                     statusCode = StatusCodes.Status500InternalServerError;

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using BLL.Exceptions;
 using Castle.Core.Internal;
 using DAL.Entities.Base;
 using DAL.Interfaces;
@@ -106,13 +105,13 @@ namespace DAL.Repositories
         public TEntity GetById(int id, string includeProperties = "")
         {
             var entity = FirstOrDefault(id, includeProperties);
-            return entity ?? throw new EntityNotFoundException(nameof(TEntity), id);
+            return entity;
         }
 
         public async Task<TEntity> GetByIdAsync(int id, string includeProperties = "")
         {
             var entity = await FirstOrDefaultAsync(id, includeProperties);
-            return entity ?? throw new EntityNotFoundException(nameof(TEntity), id);
+            return entity;
         }
 
         public IQueryable<TEntity> GetAllIncluding(string includeProperties = "")
