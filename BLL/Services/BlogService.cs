@@ -33,14 +33,14 @@ namespace BLL.Services
             return claimsId.Equals(id);
         }
 
-        public async Task<BlogDTO> CreateBlog(BlogDTO blog, string token)
+        public async Task<BlogDTO> CreateBlog(BlogDTO blogDto, string token)
         {
-            if (blog == null) throw new ArgumentNullException(nameof(blog));
-            if ((await _unitOfWork.BlogRepository.FirstOrDefaultAsync(b => b.Name == blog.Name)) != null)
-                throw new NameAlreadyTakenException();
+            if (blogDto == null) throw new ArgumentNullException(nameof(blogDto));
+            if ((await _unitOfWork.BlogRepository.FirstOrDefaultAsync(b => b.Name == blogDto.Name)) != null)
+                throw new NameAlreadyTakenException(blogDto.Name);
 
             var claimsId = _jwtFactory.GetUserIdClaim(token);
-            var blogEntity = _mapper.Map<BlogDTO, Blog>(blog);
+            var blogEntity = _mapper.Map<BlogDTO, Blog>(blogDto);
             blogEntity.OwnerId = claimsId;
 
             var result = await _unitOfWork.BlogRepository.InsertAndSaveAsync(blogEntity);
@@ -50,30 +50,31 @@ namespace BLL.Services
 
         public async Task DeleteBlog(int id, string token)
         {
+            var blog = await _unitOfWork.BlogRepository.GetByIdAsync(id);
             if (token == null) throw new ArgumentNullException(nameof(token));
-            var blogEntity = await _unitOfWork.BlogRepository.GetByIdAsync(id);
-            if (!CheckRights(token, blogEntity.OwnerId))
+
+            if (!CheckRights(token, blog.OwnerId))
                 throw new NotEnoughRightsException();
-            await _unitOfWork.BlogRepository.DeleteAndSaveAsync(blogEntity);
+            await _unitOfWork.BlogRepository.DeleteAndSaveAsync(blog);
         }
 
-        public async Task UpdateBlogName(int id, BlogDTO blog, string token)
+        public async Task UpdateBlogName(int id, BlogDTO blogDto, string token)
         {
-            if (token == null) throw new ArgumentNullException(nameof(token));
-            if (blog == null) throw new ArgumentNullException(nameof(blog));
+            var blog = await _unitOfWork.BlogRepository.GetByIdAsync(id);
+            if (blog == null) throw new EntityNotFoundException(nameof(blog), id);
 
-            var entity = await _unitOfWork.BlogRepository.GetByIdAsync(id);
+            if (!CheckRights(token, blog.OwnerId)) throw new NotEnoughRightsException();
+            if (await _unitOfWork.BlogRepository.FirstOrDefaultAsync(b => b.Name == blogDto.Name) != null)
+                throw new NameAlreadyTakenException(blogDto.Name);
 
-            if (!CheckRights(token, entity.OwnerId)) throw new NotEnoughRightsException();
-            if (await _unitOfWork.BlogRepository.FirstOrDefaultAsync(b => b.Name == blog.Name) != null) throw new NameAlreadyTakenException();
-
-            entity.Name = blog.Name;
-            await _unitOfWork.BlogRepository.UpdateAndSaveAsync(entity);
+            blog.Name = blogDto.Name;
+            await _unitOfWork.BlogRepository.UpdateAndSaveAsync(blog);
         }
 
         public async Task<BlogDTO> GetBlogById(int id)
         {
             var blog = await _unitOfWork.BlogRepository.GetByIdAsync(id, "Articles,Owner");
+            if (blog == null) throw new EntityNotFoundException(nameof(blog), id);
             return _mapper.Map<Blog, BlogDTO>(blog);
         }
 
