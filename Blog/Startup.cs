@@ -12,7 +12,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Blog.Extensions;
-using Blog.Services;
+using Blog.Mappings;
+using Blog.Middlewares;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Interfaces;
@@ -37,14 +38,13 @@ namespace Blog
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors();
             services.AddControllers();
+            services.AddCors();
             services.AddBlogDb(Configuration.GetConnectionString("DefaultConnection"));
             services.UseIdentity();
             services.AddJwt(Configuration);
             services.InjectServices();
-            services.AddAutoMapper(typeof(MappingProfile));
-            services.AddScoped<IUserService, UserService>();
+            services.AddAutoMapper(typeof(MappingProfile), typeof(AppMappingProfile));
 
             // In production, the Angular files will be served from this directory
             //            services.AddSpaStaticFiles(configuration =>
@@ -75,6 +75,7 @@ namespace Blog
             }*/
 
             //app.CreateSeedData(Configuration).Wait();
+            app.UseExceptionHandlerMiddleware();
             app.UseRouting();
 
             // global cors policy

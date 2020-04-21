@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using BLL.Interfaces;
 using BLL.Models;
 using BLL.Services;
+using Blog.Middlewares;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Interfaces;
@@ -23,6 +24,7 @@ namespace Blog.Extensions
     {
         public static void InjectServices(this IServiceCollection services)
         {
+            services.AddScoped<ExceptionHandlerMiddleware>();
             services.AddScoped<IJwtFactory, JwtFactory>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IAccountService, AccountService>();

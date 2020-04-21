@@ -36,7 +36,7 @@ namespace BLL.Services
         public async Task<BlogDTO> CreateBlog(BlogDTO blog, string token)
         {
             if (blog == null) throw new ArgumentNullException(nameof(blog));
-            if (await _unitOfWork.BlogRepository.FirstOrDefaultAsync(b => b.Name == blog.Name) != null)
+            if ((await _unitOfWork.BlogRepository.FirstOrDefaultAsync(b => b.Name == blog.Name)) != null)
                 throw new NameAlreadyTakenException();
 
             var claimsId = _jwtFactory.GetUserIdClaim(token);

@@ -52,7 +52,6 @@ namespace BLL.Services
 
         public async Task<object> Authenticate(UserDTO userDto)
         {
-
             if (userDto == null) throw new ArgumentNullException(nameof(userDto));
 
             var identity = await GetClaimsIdentity(userDto);
@@ -62,7 +61,7 @@ namespace BLL.Services
             if (token == null) throw new ArgumentNullException(nameof(token));
             return new
             {
-                id = identity.FindFirst(ClaimTypes.Name).Value,
+                id = identity.FindFirst(ClaimTypes.NameIdentifier).Value,
                 auth_token = token,
             };
         }
