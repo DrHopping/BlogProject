@@ -220,15 +220,15 @@ namespace DAL.Migrations
                 {
                     table.PrimaryKey("PK_ArticleTag", x => new { x.ArticleId, x.TagId });
                     table.ForeignKey(
-                        name: "FK_ArticleTag_Tags_ArticleId",
+                        name: "FK_ArticleTag_Articles_ArticleId",
                         column: x => x.ArticleId,
-                        principalTable: "Tags",
+                        principalTable: "Articles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ArticleTag_Articles_TagId",
+                        name: "FK_ArticleTag_Tags_TagId",
                         column: x => x.TagId,
-                        principalTable: "Articles",
+                        principalTable: "Tags",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });

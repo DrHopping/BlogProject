@@ -10,14 +10,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(BlogDbContext))]
-    [Migration("20200418132752_Initial")]
+    [Migration("20200421132105_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.2")
+                .HasAnnotation("ProductVersion", "3.1.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -340,13 +340,13 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Entities.ArticleTag", b =>
                 {
-                    b.HasOne("DAL.Entities.Tag", "Tag")
+                    b.HasOne("DAL.Entities.Article", "Article")
                         .WithMany("ArticleTags")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DAL.Entities.Article", "Article")
+                    b.HasOne("DAL.Entities.Tag", "Tag")
                         .WithMany("ArticleTags")
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)

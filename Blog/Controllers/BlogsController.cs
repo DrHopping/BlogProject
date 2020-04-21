@@ -49,7 +49,20 @@ namespace Blog.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllBlogs()
         {
-            return Ok(123);
+            return Ok(await _blogService.GetAllBlogs());
         }
+
+        [HttpPut]
+        [Authorize]
+        [Route("{id}")]
+        public async Task<IActionResult> UpdateBlog(int id, [FromBody] BlogCreateModel model)
+        {
+            await _blogService.UpdateBlogName(id, _mapper.Map<BlogDTO>(model), Request.GetToken());
+            return NoContent();
+        }
+
+
+
+
     }
 }

@@ -15,7 +15,7 @@ namespace DAL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.2")
+                .HasAnnotation("ProductVersion", "3.1.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -338,13 +338,13 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Entities.ArticleTag", b =>
                 {
-                    b.HasOne("DAL.Entities.Tag", "Tag")
+                    b.HasOne("DAL.Entities.Article", "Article")
                         .WithMany("ArticleTags")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DAL.Entities.Article", "Article")
+                    b.HasOne("DAL.Entities.Tag", "Tag")
                         .WithMany("ArticleTags")
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)

@@ -11,6 +11,8 @@ namespace Blog.Mappings
             CreateMap<RegisterModel, UserDTO>()
                 .ForMember(dto => dto.UserName, opt => opt.MapFrom(model => model.Username));
             CreateMap<BlogCreateModel, BlogDTO>();
+            CreateMap<TagCreateModel, TagDTO>();
+            CreateMap<ArticleCreateModel, ArticleDTO>();
         }
     }
 }

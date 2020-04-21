@@ -58,7 +58,7 @@ namespace BLL.Services
             await _unitOfWork.BlogRepository.DeleteAndSaveAsync(blog);
         }
 
-        public async Task UpdateBlogName(int id, BlogDTO blogDto, string token)
+        public async Task<BlogDTO> UpdateBlogName(int id, BlogDTO blogDto, string token)
         {
             var blog = await _unitOfWork.BlogRepository.GetByIdAsync(id);
             if (blog == null) throw new EntityNotFoundException(nameof(blog), id);
@@ -68,7 +68,8 @@ namespace BLL.Services
                 throw new NameAlreadyTakenException(blogDto.Name);
 
             blog.Name = blogDto.Name;
-            await _unitOfWork.BlogRepository.UpdateAndSaveAsync(blog);
+            var result = await _unitOfWork.BlogRepository.UpdateAndSaveAsync(blog);
+            return _mapper.Map<BlogDTO>(result);
         }
 
         public async Task<BlogDTO> GetBlogById(int id)

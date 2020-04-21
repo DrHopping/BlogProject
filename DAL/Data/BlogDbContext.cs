@@ -59,15 +59,11 @@ namespace DAL.Data
             modelBuilder.Entity<ArticleTag>()
                 .HasOne(at => at.Article)
                 .WithMany(p => p.ArticleTags)
-                .HasForeignKey(at => at.TagId);
+                .HasForeignKey(at => at.ArticleId);
             modelBuilder.Entity<ArticleTag>()
                 .HasOne(at => at.Tag)
                 .WithMany(p => p.ArticleTags)
-                .HasForeignKey(at => at.ArticleId);
-
-
-
-
+                .HasForeignKey(at => at.TagId);
         }
     }
 }
