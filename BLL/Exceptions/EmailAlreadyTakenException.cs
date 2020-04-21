@@ -6,9 +6,9 @@ namespace BLL.Exceptions
     {
         public override string Message { get; }
 
-        public EmailAlreadyTakenException() : base()
+        public EmailAlreadyTakenException(string email) : base()
         {
-            Message = "Email used by user is already taken";
+            Message = $"Email '{email}' is already taken";
         }
 
     }

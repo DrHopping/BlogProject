@@ -1,8 +1,9 @@
 ﻿using System;
+using BLL.Exceptions.Base;
 
 namespace BLL.Exceptions
 {
-    public class WrongCredentialsException : ArgumentException
+    public class WrongCredentialsException : BadRequestException
     {
         public override string Message { get; }
 

@@ -1,8 +1,9 @@
 ﻿using System;
+using BLL.Exceptions.Base;
 
 namespace BLL.Exceptions
 {
-    public class NotEnoughRightsException : Exception
+    public class NotEnoughRightsException : ForbiddenException
     {
         public override string Message { get; }
 

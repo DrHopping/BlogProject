@@ -1,15 +1,15 @@
 ﻿using System;
+using BLL.Exceptions.Base;
 
 namespace BLL.Exceptions
 {
-    public class NameAlreadyTakenException : ArgumentException
+    public class NameAlreadyTakenException : BadRequestException
     {
         public override string Message { get; }
 
-        public NameAlreadyTakenException() : base()
+        public NameAlreadyTakenException(string name) : base()
         {
-            Message = "Name used by user is already taken";
+            Message = $"Name '{name}' is already taken";
         }
-
     }
 }
