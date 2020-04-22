@@ -63,15 +63,6 @@ namespace BLL.Services
             }
         }
 
-        public async Task<IEnumerable<ArticleDTO>> GetArticlesByTags(string tags)
-        {
-            if (tags == null) throw new ArgumentNullException(nameof(tags));
-            var tagNames = tags.Split(',');
-            var articles = (await _unitOfWork.TagRepository.GetAllAsync(t => tagNames.Contains(t.Name), "ArticleTags.Article"))
-                .SelectMany(t => t.ArticleTags.Select(at => at.Article));
-            return _mapper.Map<IEnumerable<Article>, IEnumerable<ArticleDTO>>(articles);
-        }
-
         public async Task<ArticleDTO> CreateArticle(ArticleDTO articleDto, string token)
         {
             var blog = await _unitOfWork.BlogRepository.GetByIdAsync(articleDto.BlogId.GetValueOrDefault());
@@ -150,6 +141,17 @@ namespace BLL.Services
                     || a.Title.ToLower().Contains(filter.ToLower()),
                     "ArticleTags.Tag,Blog.Owner");
 
+            return _mapper.Map<IEnumerable<Article>, IEnumerable<ArticleDTO>>(articles);
+        }
+
+        public async Task<IEnumerable<ArticleDTO>> GetArticlesByTags(string tags)
+        {
+            if (tags == null) throw new ArgumentNullException(nameof(tags));
+            var tagNames = tags.Split(',');
+            var articleIds = (await _unitOfWork.TagRepository.GetAllAsync(t => tagNames.Contains(t.Name),
+                    "ArticleTags.Tag,ArticleTags.Article"))
+                .SelectMany(t => t.ArticleTags.Select(at => at.Article.Id));
+            var articles = await _unitOfWork.ArticleRepository.GetAllAsync(a => articleIds.Contains(a.Id), "ArticleTags.Tag,Blog.Owner");
             return _mapper.Map<IEnumerable<Article>, IEnumerable<ArticleDTO>>(articles);
         }
 
