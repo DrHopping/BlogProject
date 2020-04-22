@@ -35,12 +35,12 @@ namespace BLL.Services
 
             var userId = _jwtFactory.GetUserIdClaim(token);
             var user = await _userManager.FindByIdAsync(userId.ToString());
-            if (user == null) throw new ArgumentNullException(nameof(user));
+            if (user == null) throw new EntityNotFoundException(nameof(user), userId);
 
             var commentEntity = _mapper.Map<CommentDTO, Comment>(comment);
             commentEntity.UserId = userId;
 
-            await _unitOfWork.CommentRepository.InsertAndSaveAsync(commentEntity);
+            commentEntity = await _unitOfWork.CommentRepository.InsertAndSaveAsync(commentEntity);
 
             var result = _mapper.Map<Comment, CommentDTO>(commentEntity);
             result.CreatorUsername = user.UserName;
