@@ -6,6 +6,7 @@ using AutoMapper;
 using BLL.DTO;
 using BLL.Exceptions;
 using BLL.Interfaces;
+using Castle.Core.Internal;
 using DAL.Entities;
 using DAL.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -46,6 +47,22 @@ namespace BLL.Services
 
         }
 
+        private async Task CreateArticleTagConnection(ArticleDTO articleDto, Article articleEntity)
+        {
+            if (articleDto.Tags != null && articleDto.Tags.Any())
+            {
+                var articleTags = new List<ArticleTag>();
+                var tagIds = await CreateTagsAndReturnIds(articleDto);
+                foreach (var tagId in tagIds)
+                {
+                    articleTags.Add(new ArticleTag { ArticleId = articleEntity.Id, TagId = tagId });
+                }
+
+                articleEntity.ArticleTags = articleTags;
+                articleEntity = await _unitOfWork.ArticleRepository.UpdateAndSaveAsync(articleEntity);
+            }
+        }
+
         public async Task<IEnumerable<ArticleDTO>> GetArticlesByTags(string tags)
         {
             if (tags == null) throw new ArgumentNullException(nameof(tags));
@@ -66,19 +83,7 @@ namespace BLL.Services
             var articleEntity = _mapper.Map<ArticleDTO, Article>(articleDto);
             articleEntity = await _unitOfWork.ArticleRepository.InsertAndSaveAsync(articleEntity);
 
-            var articleId = articleEntity.Id;
-            if (articleDto.Tags != null && articleDto.Tags.Any())
-            {
-                var articleTags = new List<ArticleTag>();
-                var tagIds = await CreateTagsAndReturnIds(articleDto);
-                foreach (var tagId in tagIds)
-                {
-                    articleTags.Add(new ArticleTag { ArticleId = articleId, TagId = tagId });
-                }
-
-                articleEntity.ArticleTags = articleTags;
-                articleEntity = await _unitOfWork.ArticleRepository.UpdateAndSaveAsync(articleEntity);
-            }
+            await CreateArticleTagConnection(articleDto, articleEntity);
 
             return _mapper.Map<Article, ArticleDTO>(articleEntity); ;
         }
@@ -100,22 +105,24 @@ namespace BLL.Services
 
         public async Task UpdateArticle(int id, ArticleDTO articleDto, string token)
         {
-            var article = await _unitOfWork.ArticleRepository.GetByIdAsync(id, "Blog");
+            var article = await _unitOfWork.ArticleRepository.GetByIdAsync(id, "Blog,ArticleTags.Tag");
             if (article == null) throw new EntityNotFoundException(nameof(article), id);
 
             var ownerId = article.Blog.OwnerId;
             var requesterId = _jwtFactory.GetUserIdClaim(token);
             if (!ownerId.Equals(requesterId)) throw new NotEnoughRightsException();
 
-            article.Title = articleDto.Title;
-            article.Content = articleDto.Content;
+            if (!articleDto.Title.IsNullOrEmpty()) article.Title = articleDto.Title;
+            if (!articleDto.Content.IsNullOrEmpty()) article.Content = articleDto.Content;
+            await CreateArticleTagConnection(articleDto, article);
+
             article.LastUpdated = DateTime.Now;
             await _unitOfWork.ArticleRepository.UpdateAndSaveAsync(article);
         }
 
         public async Task<ArticleDTO> GetArticleById(int id)
         {
-            var article = await _unitOfWork.ArticleRepository.GetByIdAsync(id, "Tags,Comments.User,Blog.Owner");
+            var article = await _unitOfWork.ArticleRepository.GetByIdAsync(id, "ArticleTags.Tag,Comments.User,Blog.Owner");
             if (article == null) throw new EntityNotFoundException(nameof(article), id);
             return _mapper.Map<Article, ArticleDTO>(article);
         }
@@ -137,9 +144,11 @@ namespace BLL.Services
 
         public async Task<IEnumerable<ArticleDTO>> GetArticlesByTextFilter(string filter)
         {
+            if (filter == null) filter = string.Empty;
             var articles = await _unitOfWork.ArticleRepository.GetAllAsync(a =>
-                a.Content.ToLower().Contains(filter.ToLower())
-                || a.Title.ToLower().Contains(filter.ToLower()));
+                    a.Content.ToLower().Contains(filter.ToLower())
+                    || a.Title.ToLower().Contains(filter.ToLower()),
+                    "ArticleTags.Tag,Blog.Owner");
 
             return _mapper.Map<IEnumerable<Article>, IEnumerable<ArticleDTO>>(articles);
         }

@@ -27,10 +27,16 @@ namespace Blog.Controllers
         }
 
         [HttpGet]
-        [Route("{id}")]
-        public async Task<IActionResult> GetArticleById(int id)
+        [Route("{id:int}")]
+        public async Task<IActionResult> GetArticleById([FromRoute] int id)
         {
             return Ok(await _articleService.GetArticleById(id));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllArticles()
+        {
+            return Ok(await _articleService.GetAllArticles());
         }
 
         [HttpPost]
@@ -44,5 +50,25 @@ namespace Blog.Controllers
             }, result);
 
         }
+
+        [HttpPut]
+        [Route("{id}")]
+        [Authorize]
+        public async Task<IActionResult> UpdateArticle(int id, [FromBody] ArticleUpdateModel model)
+        {
+            await _articleService.UpdateArticle(id, _mapper.Map<ArticleDTO>(model), Request.GetToken());
+            return NoContent();
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteArticle(int id)
+        {
+            await _articleService.DeleteArticle(id, Request.GetToken());
+            return NoContent();
+        }
+
+
     }
 }

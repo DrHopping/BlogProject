@@ -13,6 +13,8 @@ namespace Blog.Mappings
             CreateMap<BlogCreateModel, BlogDTO>();
             CreateMap<TagCreateModel, TagDTO>();
             CreateMap<ArticleCreateModel, ArticleDTO>();
+            CreateMap<ArticleUpdateModel, ArticleDTO>();
+
         }
     }
 }
