@@ -6,6 +6,7 @@ using AutoMapper;
 using BLL.DTO;
 using BLL.Services;
 using Blog.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -49,6 +50,7 @@ namespace Blog.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Moderator")]
         [Route("{id}")]
         public async Task<IActionResult> UpdateTag(int id, [FromBody] TagCreateModel model)
         {
@@ -57,6 +59,7 @@ namespace Blog.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Roles = "Moderator")]
         [Route("{id}")]
         public async Task<IActionResult> DeleteTag(int id)
         {
