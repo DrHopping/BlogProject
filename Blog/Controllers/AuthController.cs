@@ -25,24 +25,8 @@ namespace Blog.Controllers
         [HttpPost]
         public async Task<IActionResult> Authenticate([FromBody] UserDTO user)
         {
-            try
-            {
-                var result = await _authService.Authenticate(user);
-                if (result == null) throw new ArgumentNullException();
-                return Ok(result);
-            }
-            catch (ArgumentNullException ex)
-            {
-                return BadRequest(ex);
-            }
-            catch (WrongCredentialsException ex)
-            {
-                return NotFound(user);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest();
-            }
+            var result = await _authService.Authenticate(user);
+            return Ok(result);
         }
     }
 }
