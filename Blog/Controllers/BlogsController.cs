@@ -61,8 +61,12 @@ namespace Blog.Controllers
             return NoContent();
         }
 
-
-
-
+        [HttpPut]
+        [Authorize]
+        [Route("{id}")]
+        public async Task<IActionResult> DeleteBlog(int id)
+        {
+            await _blogService.DeleteBlog(id, Request.GetToken());
+            return NoContent();
+        }
     }
-}
