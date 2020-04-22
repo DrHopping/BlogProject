@@ -8,5 +8,8 @@ namespace BLL.Services
     {
         Task<IEnumerable<TagDTO>> GetAllTags();
         Task<TagDTO> GetTagById(int id);
+        Task<TagDTO> CreateTag(TagDTO tagDto);
+        Task<TagDTO> UpdateTag(int id, TagDTO tagDto);
+        Task DeleteTag(int id);
     }
 }

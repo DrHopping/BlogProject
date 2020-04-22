@@ -32,5 +32,28 @@ namespace BLL.Services
             if (tag == null) throw new EntityNotFoundException(nameof(Tag), id);
             return _mapper.Map<Tag, TagDTO>(tag);
         }
+
+        public async Task<TagDTO> CreateTag(TagDTO tagDto)
+        {
+            var tag = _mapper.Map<Tag>(tagDto);
+            var result = await _unitOfWork.TagRepository.InsertAndSaveAsync(tag);
+            return _mapper.Map<TagDTO>(result);
+        }
+
+        public async Task<TagDTO> UpdateTag(int id, TagDTO tagDto)
+        {
+            var tag = await _unitOfWork.TagRepository.GetByIdAsync(id);
+            if (tag == null) throw new EntityNotFoundException(nameof(tag), id);
+            tag.Name = tagDto.Name;
+            var result = await _unitOfWork.TagRepository.UpdateAndSaveAsync(tag);
+            return _mapper.Map<TagDTO>(result);
+        }
+
+        public async Task DeleteTag(int id)
+        {
+            var tag = await _unitOfWork.TagRepository.GetByIdAsync(id);
+            if (tag == null) throw new EntityNotFoundException(nameof(tag), id);
+            await _unitOfWork.TagRepository.DeleteAndSaveAsync(tag);
+        }
     }
 }
