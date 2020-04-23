@@ -69,5 +69,12 @@ namespace Blog.Controllers
             await _blogService.DeleteBlog(id, Request.GetToken());
             return NoContent();
         }
+
+        [HttpGet]
+        [Route("{id}/articles")]
+        public async Task<IActionResult> GetBlogArticles(int id)
+        {
+            return Ok(await _blogService.GetAllArticlesByBlogId(id));
+        }
     }
 }

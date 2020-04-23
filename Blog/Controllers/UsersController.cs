@@ -16,6 +16,7 @@ using Microsoft.Net.Http.Headers;
 namespace Blog.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -38,6 +39,7 @@ namespace Blog.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> RegisterRegularUser([FromBody] RegisterModel registerModel)
         {
             var result = await _accountService.RegisterRegularUser(_mapper.Map<UserDTO>(registerModel));

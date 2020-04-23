@@ -69,6 +69,19 @@ namespace Blog.Controllers
             return NoContent();
         }
 
+        [HttpGet]
+        [Route("{id}/tags")]
+        public async Task<IActionResult> GetArticleTags(int id)
+        {
+            return Ok(await _articleService.GetTagsByArticleId(id));
+        }
+
+        [HttpGet]
+        [Route("{id}/comments")]
+        public async Task<IActionResult> GetArticleComments(int id)
+        {
+            return Ok(await _articleService.GetCommentsByArticleId(id));
+        }
 
     }
 }
