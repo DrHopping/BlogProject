@@ -26,19 +26,44 @@ namespace Blog.Controllers
             _articleService = articleService;
         }
 
+        /// <summary>
+        /// Gets article by id
+        /// </summary>
+        /// <returns>Article with passed id</returns>
+        /// <response code="200">Return article with passed id</response>
+        /// <response code="404">If article with passed id not found</response> 
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(ArticleDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status404NotFound)]
         [HttpGet]
-        [Route("{id:int}")]
-        public async Task<IActionResult> GetArticleById([FromRoute] int id)
+        [Route("{id}")]
+        public async Task<IActionResult> GetArticleById(int id)
         {
             return Ok(await _articleService.GetArticleById(id));
         }
 
+        /// <summary>
+        /// Gets all articles
+        /// </summary>
+        /// <returns>All articles</returns>
+        /// <response code="200">Return all articles</response>
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(ArticleDTO), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetAllArticles()
         {
             return Ok(await _articleService.GetAllArticles());
         }
 
+        /// <summary>
+        /// Creates new article
+        /// </summary>
+        /// <returns>Article with passed id</returns>
+        /// <response code="201">Returns newly created article </response>
+        /// <response code="404">If article with passed id not found</response> 
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(ArticleDTO), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status400BadRequest)]
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateArticle([FromBody] ArticleCreateModel model)
@@ -51,6 +76,16 @@ namespace Blog.Controllers
 
         }
 
+        /// <summary>
+        /// Updates article with passed id
+        /// </summary>
+        /// <response code="204">If article successfully updated</response>
+        /// <response code="404">If article with passed id not found</response>
+        /// <response code="400">If request body not proper</response> 
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status400BadRequest)]
         [HttpPut]
         [Route("{id}")]
         [Authorize]
@@ -60,6 +95,14 @@ namespace Blog.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Deletes article with passed id
+        /// </summary>
+        /// <response code="204">If article successfully deleted</response>
+        /// <response code="404">If article with passed id not found</response>
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status404NotFound)]
         [HttpDelete]
         [Route("{id}")]
         [Authorize]
@@ -69,6 +112,15 @@ namespace Blog.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Gets tags of article with passed id
+        /// </summary>
+        /// <returns>Tags of article with passed id</returns>
+        /// <response code="200">Returns tags of article with passed id</response>
+        /// <response code="404">If article with passed id not found</response>
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(ArticleDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status404NotFound)]
         [HttpGet]
         [Route("{id}/tags")]
         public async Task<IActionResult> GetArticleTags(int id)
@@ -76,6 +128,15 @@ namespace Blog.Controllers
             return Ok(await _articleService.GetTagsByArticleId(id));
         }
 
+        /// <summary>
+        /// Gets comments of article with passed id
+        /// </summary>
+        /// <returns>Comments of article with passed id</returns>
+        /// <response code="200">Returns comments of article with passed id</response>
+        /// <response code="404">If article with passed id not found</response>
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(ArticleDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status404NotFound)]
         [HttpGet]
         [Route("{id}/comments")]
         public async Task<IActionResult> GetArticleComments(int id)

@@ -61,7 +61,7 @@ namespace Blog.Controllers
             return NoContent();
         }
 
-        [HttpPut]
+        [HttpDelete]
         [Authorize]
         [Route("{id}")]
         public async Task<IActionResult> DeleteBlog(int id)
