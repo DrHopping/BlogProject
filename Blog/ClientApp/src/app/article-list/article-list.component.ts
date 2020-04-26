@@ -1,23 +1,15 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Article } from '../_models/article';
-import { Subscription } from 'rxjs';
-import { ArticleService } from '../_services/article.service';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-article-list',
   templateUrl: './article-list.component.html',
-  styleUrls: ['./article-list.component.css']
+  styleUrls: ['./article-list.component.scss']
 })
-export class ArticleListComponent implements OnInit, OnDestroy {
-  private articles: Article[];
-  private sub: Subscription = new Subscription();
+export class ArticleListComponent implements OnInit {
 
-  constructor(private articleService: ArticleService) { }
+  constructor() { }
 
   ngOnInit(): void {
-    this.sub = this.articleService.getArticles().subscribe(a => this.articles = a)
   }
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
-  }
+
 }
