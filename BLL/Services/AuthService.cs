@@ -33,14 +33,7 @@ namespace BLL.Services
             if (user.Password == null) throw new ArgumentNullException(nameof(user.Password));
 
             var userToVerify = await _userManager.FindByNameAsync(user.UserName);
-            if (userToVerify == null)
-            {
-                userToVerify = await _userManager.FindByEmailAsync(user.Email);
-                if (userToVerify == null)
-                {
-                    throw new WrongCredentialsException();
-                }
-            }
+            if (userToVerify == null) throw new WrongCredentialsException();
 
             if (await _userManager.CheckPasswordAsync(userToVerify, user.Password))
             {

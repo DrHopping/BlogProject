@@ -16,6 +16,7 @@ namespace Blog.Mappings
             CreateMap<ArticleUpdateModel, ArticleDTO>();
             CreateMap<CommentCreateModel, CommentDTO>();
             CreateMap<CommentUpdateModel, CommentDTO>();
+            CreateMap<AuthenticateModel, UserDTO>();
 
 
         }
