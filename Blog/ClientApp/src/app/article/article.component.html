@@ -1,0 +1,16 @@
+<ng-container *ngIf='articleItem as article'>
+  <div class="article-header">
+    <div class="article-header-title"><b> {{article.title}} </b></div>
+    <div class="article-header-tags">
+      <ng-container *ngFor='let tag of article.tags'>
+        <i>| {{tag.name}} </i>
+      </ng-container>
+    </div>
+    <div class="article-header-time"> | {{article.lastUpdated | date: 'dd/MM/yyyy hh:mm:ss'}}</div>
+  </div>
+  <div class="article-body">
+    <div class="aticle-body-content">
+      {{article.content}}
+    </div>
+  </div>
+</ng-container>

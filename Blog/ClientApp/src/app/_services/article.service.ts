@@ -16,4 +16,7 @@ export class ArticleService {
     return this.http.get<Article[]>(this.backendUrl);
   }
 
+  getArticle(id: number): Observable<Article> {
+    return this.http.get<Article>(`${this.backendUrl}/${id}`);
+  }
 }

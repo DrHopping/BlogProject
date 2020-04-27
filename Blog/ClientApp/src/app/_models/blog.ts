@@ -1,7 +1,9 @@
+import { Article } from "./article";
+
 export class Blog {
-    Id
-    Name
-    OwnerId
-    OwnerUsername
-    Articles
+    id: number;
+    name: string;
+    ownerId: number;
+    ownerUsername: string;
+    articles: Article[];
 }

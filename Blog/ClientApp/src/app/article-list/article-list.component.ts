@@ -9,7 +9,8 @@ import { ArticleService } from '../_services/article.service';
   styleUrls: ['./article-list.component.css']
 })
 export class ArticleListComponent implements OnInit, OnDestroy {
-  private articles: Article[];
+  articles: Article[];
+
   private sub: Subscription = new Subscription();
 
   constructor(private articleService: ArticleService) { }
