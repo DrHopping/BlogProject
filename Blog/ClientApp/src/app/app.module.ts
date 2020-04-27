@@ -10,6 +10,8 @@ import { ArticleListComponent } from './article-list/article-list.component';
 import { BlogListComponent } from './blog-list/blog-list.component';
 import { ArticleComponent } from './article/article.component';
 import { LoginComponent } from './login/login.component';
+import { JwtInterceptor } from './_helpers/jwt.interceptor';
+import { ErrorInterceptor } from './_helpers/error.interceptor';
 
 @NgModule({
   declarations: [
@@ -31,6 +33,10 @@ import { LoginComponent } from './login/login.component';
       { path: 'articles/:id', component: ArticleComponent },
       { path: 'login', component: LoginComponent },
     ])
+  ],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
   ],
   bootstrap: [AppComponent]
 })

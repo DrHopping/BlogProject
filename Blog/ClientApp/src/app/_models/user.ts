@@ -2,5 +2,5 @@ export class User {
     id: number;
     username: string;
     role: string;
-    token?: string;
+    auth_token?: string;
 }

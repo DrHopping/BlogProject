@@ -55,6 +55,8 @@ namespace BLL.Services
             return new
             {
                 id = identity.FindFirst(ClaimTypes.NameIdentifier).Value,
+                username = identity.FindFirst(ClaimTypes.Name).Value,
+                role = identity.FindFirst(ClaimTypes.Role).Value,
                 auth_token = token,
             };
         }
