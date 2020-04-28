@@ -119,7 +119,8 @@ namespace BLL.Services
                 if (isNameTaken != null) throw new NameAlreadyTakenException(user.Username);
                 userEntity.UserName = user.Username;
             }
-            else if (user.Email != null && !userEntity.Email.Equals(user.Email))
+
+            if (user.Email != null && !userEntity.Email.Equals(user.Email))
             {
                 var isEmailTaken = await _userManager.FindByEmailAsync(user.Email);
                 if (isEmailTaken != null) throw new EmailAlreadyTakenException(user.Email);
@@ -127,7 +128,6 @@ namespace BLL.Services
             }
 
             return (await _userManager.UpdateAsync(userEntity)).Succeeded;
-
         }
 
         public async Task<bool> ChangePassword(int id, PasswordDTO password, string token)
@@ -144,7 +144,7 @@ namespace BLL.Services
             if (requesterId != id && requesterRole != "Admin") throw new NotEnoughRightsException();
 
             bool checkPassword = await _userManager.CheckPasswordAsync(userEntity, password.OldPassword);
-            if (checkPassword == false) throw new ArgumentException(nameof(password));
+            if (checkPassword == false) throw new WrongCredentialsException();
             return (await _userManager.ChangePasswordAsync(userEntity, password.OldPassword, password.NewPassword)).Succeeded;
         }
     }

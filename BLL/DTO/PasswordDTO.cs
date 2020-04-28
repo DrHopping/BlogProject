@@ -7,9 +7,9 @@ namespace BLL.DTO
 {
     public class PasswordDTO
     {
-        [RegularExpression(@"^.*(?=.{6,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(^[a-zA-Z0-9@\$=!:.#%]+$)")]
+        [Required]
         public string OldPassword { get; set; }
-        [RegularExpression(@"^.*(?=.{6,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(^[a-zA-Z0-9@\$=!:.#%]+$)")]
+        [Required]
         public string NewPassword { get; set; }
     }
 }

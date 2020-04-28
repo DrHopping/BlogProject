@@ -29,6 +29,15 @@ namespace Blog.Controllers
             _mapper = mapper;
         }
 
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllUser()
+        {
+            var users = await _accountService.GetAllUsers();
+            return Ok(users);
+        }
+
         [Authorize(Roles = "Admin")]
         [HttpGet]
         [Route("{id}")]
@@ -36,6 +45,33 @@ namespace Blog.Controllers
         {
             var user = await _accountService.GetUserById(id, Request.GetToken());
             return Ok(user);
+        }
+
+        [Authorize]
+        [HttpPut]
+        [Route("{id}")]
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateModel model)
+        {
+            await _accountService.UpdateUser(id, _mapper.Map<UserDTO>(model), Request.GetToken());
+            return NoContent();
+        }
+
+        [Authorize]
+        [HttpPut]
+        [Route("{id}/password")]
+        public async Task<IActionResult> ChangeUserPassword(int id, [FromBody] PasswordDTO model)
+        {
+            await _accountService.ChangePassword(id, model, Request.GetToken());
+            return NoContent();
+        }
+
+        [Authorize]
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            await _accountService.DeleteUser(id, Request.GetToken());
+            return NoContent();
         }
 
         [HttpPost]
