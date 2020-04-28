@@ -30,9 +30,10 @@ namespace BLL.Services
         private async Task<User> CreateUser(UserDTO userDto)
         {
             if (await _userManager.FindByEmailAsync(userDto.Email) != null) throw new EmailAlreadyTakenException(userDto.Email);
-            if (await _userManager.FindByNameAsync(userDto.UserName) != null) throw new NameAlreadyTakenException(userDto.UserName);
+            if (await _userManager.FindByNameAsync(userDto.Username) != null) throw new NameAlreadyTakenException(userDto.Username);
             var user = _mapper.Map<UserDTO, User>(userDto);
             var result = await _userManager.CreateAsync(user, userDto.Password);
+            if (result.Errors.Any()) throw new BadPasswordException(result.Errors);
             return result.Succeeded ? await _userManager.FindByNameAsync(user.UserName) : null;
         }
 
@@ -102,7 +103,7 @@ namespace BLL.Services
         public async Task<bool> UpdateUser(int id, UserDTO user, string token)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
-            if (user.UserName == null && user.Email == null) throw new ArgumentNullException(nameof(user));
+            if (user.Username == null && user.Email == null) throw new ArgumentNullException(nameof(user));
 
             var requesterId = _jwtFactory.GetUserIdClaim(token);
             var requesterRole = _jwtFactory.GetUserRoleClaim(token);
@@ -112,11 +113,11 @@ namespace BLL.Services
 
             if (requesterId != id && requesterRole != "Admin") throw new NotEnoughRightsException();
 
-            if (user.UserName != null && !userEntity.UserName.Equals(user.UserName))
+            if (user.Username != null && !userEntity.UserName.Equals(user.Username))
             {
-                var isNameTaken = await _userManager.FindByNameAsync(user.UserName);
-                if (isNameTaken != null) throw new NameAlreadyTakenException(user.UserName);
-                userEntity.UserName = user.UserName;
+                var isNameTaken = await _userManager.FindByNameAsync(user.Username);
+                if (isNameTaken != null) throw new NameAlreadyTakenException(user.Username);
+                userEntity.UserName = user.Username;
             }
             else if (user.Email != null && !userEntity.Email.Equals(user.Email))
             {

@@ -1,8 +1,9 @@
 ﻿using System;
+using BLL.Exceptions.Base;
 
 namespace BLL.Exceptions
 {
-    public class EmailAlreadyTakenException : ArgumentException
+    public class EmailAlreadyTakenException : BadRequestException
     {
         public override string Message { get; }
 

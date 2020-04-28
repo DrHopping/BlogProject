@@ -9,7 +9,7 @@ namespace Blog.Mappings
         public AppMappingProfile()
         {
             CreateMap<RegisterModel, UserDTO>()
-                .ForMember(dto => dto.UserName, opt => opt.MapFrom(model => model.Username));
+                .ForMember(dto => dto.Username, opt => opt.MapFrom(model => model.Username));
             CreateMap<BlogCreateModel, BlogDTO>();
             CreateMap<TagCreateModel, TagDTO>();
             CreateMap<ArticleCreateModel, ArticleDTO>();

@@ -1,6 +1,10 @@
+import { Blog } from "./blog";
+import { Comment } from "./comment";
+
 export class User {
-    id: number;
+    Id: string;
     username: string;
-    role: string;
-    auth_token?: string;
+    email: string;
+    blogs: Blog[]
+    Comments: Comment[]
 }

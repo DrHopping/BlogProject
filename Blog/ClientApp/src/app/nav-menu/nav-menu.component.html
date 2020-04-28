@@ -12,31 +12,40 @@
             <a class="nav-link text-dark" [routerLink]="['/']">Home</a>
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-dark" [routerLink]="['/counter']">Counter</a>
+            <a class="nav-link text-dark" [routerLink]="['/articles']">Articles</a>
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
             <a class="nav-link text-dark" [routerLink]="['/fetch-data']">Fetch data</a>
           </li>
 
-
-          <li class="nav-item" ngbDropdown display="dynamic" placement="bottom-right">
+          <li *ngIf="user" class="nav-item" ngbDropdown display="dynamic" placement="bottom-right">
             <a class="nav-link" style="cursor: pointer" ngbDropdownToggle id="navbarDropdown3" role="button">
-              Dynamic
+              <svg class="bi bi-people-circle" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M13.468 12.37C12.758 11.226 11.195 10 8 10s-4.757 1.225-5.468 2.37A6.987 6.987 0 008 15a6.987 6.987 0 005.468-2.63z" />
+                <path fill-rule="evenodd" d="M8 9a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                <path fill-rule="evenodd" d="M8 1a7 7 0 100 14A7 7 0 008 1zM0 8a8 8 0 1116 0A8 8 0 010 8z"
+                  clip-rule="evenodd" />
+              </svg>
+              {{user.username}}
             </a>
             <div ngbDropdownMenu aria-labelledby="navbarDropdown3" class="dropdown-menu">
-              <a ngbDropdownItem href="#" (click)="$event.preventDefault()">Action</a>
-              <a ngbDropdownItem href="#" (click)="$event.preventDefault()">Another action</a>
+              <a ngbDropdownItem [routerLink]="['/profile']" (click)="$event.preventDefault()">Profile</a>
               <a ngbDropdownItem href="#" (click)="$event.preventDefault()">Something else here</a>
+              <a ngbDropdownItem [routerLink]="['/login']" (click)="logout()">Log out</a>
             </div>
           </li>
+          <li *ngIf="!user" class="nav-item" [routerLinkActive]="['link-active']">
+            <a class="nav-link text-dark" [routerLink]="['/signup']">Sign Up</a>
+          </li>
 
-
+          <li *ngIf="!user" class="nav-item" [routerLinkActive]="['link-active']">
+            <a class="nav-link text-dark" [routerLink]="['/login']">Log In</a>
+          </li>
 
         </ul>
       </div>
     </div>
   </nav>
-
-
-
 </header>

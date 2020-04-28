@@ -28,7 +28,7 @@ namespace BLL.Mappings
 
             CreateMap<User, UserDTO>()
                 .ForMember(dto => dto.Id, opt => opt.MapFrom(ent => ent.Id))
-                .ForMember(dto => dto.UserName, opt => opt.MapFrom(ent => ent.UserName))
+                .ForMember(dto => dto.Username, opt => opt.MapFrom(ent => ent.UserName))
                 .ForMember(dto => dto.Blogs, opt => opt.MapFrom(ent => ent.Blogs))
                 .ForMember(dto => dto.Comments, opt => opt.MapFrom(ent => ent.Comments))
                 .ForMember(dto => dto.Email, opt => opt.MapFrom(ent => ent.Email))
@@ -55,7 +55,7 @@ namespace BLL.Mappings
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<UserDTO, User>()
-                .ForMember(ent => ent.UserName, opt => opt.MapFrom(dto => dto.UserName))
+                .ForMember(ent => ent.UserName, opt => opt.MapFrom(dto => dto.Username))
                 .ForMember(ent => ent.Email, opt => opt.MapFrom(dto => dto.Email))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
