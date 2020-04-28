@@ -22,6 +22,7 @@
 
           <ng-container *ngIf="user">
             <app-profile-settings [user]="user" [hidden]="selectedTab != 1"></app-profile-settings>
+            <app-profile-password [user]="user" [hidden]="selectedTab != 2"></app-profile-password>
           </ng-container>
 
 

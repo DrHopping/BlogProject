@@ -28,4 +28,8 @@ export class UserService {
         this.currentUserService.setCurrentUser(user);
       }));
   }
+
+  changePassword(oldPassword, newPassword): Observable<any> {
+    return this.http.put<any>(`${environment.apiUrl}/users/${this.currentUserService.getCurrentUser().id}/password`, { oldPassword, newPassword })
+  }
 }

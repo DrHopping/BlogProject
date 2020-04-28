@@ -15,6 +15,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ProfileComponent } from './profile/profile.component';
 import { SignupComponent } from './signup/signup.component';
 import { ProfileSettingsComponent } from './profile/profile-settings/profile-settings.component';
+import { ProfilePasswordComponent } from './profile/profile-password/profile-password.component';
+import { AuthGuard } from './_helpers/auth.guard';
 
 
 @NgModule({
@@ -28,6 +30,7 @@ import { ProfileSettingsComponent } from './profile/profile-settings/profile-set
     ProfileComponent,
     SignupComponent,
     ProfileSettingsComponent,
+    ProfilePasswordComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -41,7 +44,7 @@ import { ProfileSettingsComponent } from './profile/profile-settings/profile-set
       { path: 'articles/:id', component: ArticleComponent },
       { path: 'login', component: LoginComponent },
       { path: 'signup', component: SignupComponent },
-      { path: 'profile', component: ProfileComponent },
+      { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
     ], { onSameUrlNavigation: 'reload' })
   ],
   providers: [

@@ -13,7 +13,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   selectedTab: number = 1;
   user: User;
-  tabs: string[] = ['Dashboard', 'User Management', 'Used', 'Enquiry']
+  tabs: string[] = ['Info', 'Change password', 'Used', 'Enquiry']
 
   constructor(private userService: UserService) { }
 
