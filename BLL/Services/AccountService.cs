@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using BLL.DTO;
 using BLL.Exceptions;
+using BLL.Helpers;
 using BLL.Interfaces;
 using DAL.Entities;
 using DAL.Interfaces;
@@ -32,6 +33,7 @@ namespace BLL.Services
             if (await _userManager.FindByEmailAsync(userDto.Email) != null) throw new EmailAlreadyTakenException(userDto.Email);
             if (await _userManager.FindByNameAsync(userDto.Username) != null) throw new NameAlreadyTakenException(userDto.Username);
             var user = _mapper.Map<UserDTO, User>(userDto);
+            user.AvatarUrl = DefaultAvatarUrlProvider.GetDefaultAvatarUrl();
             var result = await _userManager.CreateAsync(user, userDto.Password);
             if (result.Errors.Any()) throw new BadPasswordException(result.Errors);
             return result.Succeeded ? await _userManager.FindByNameAsync(user.UserName) : null;
@@ -125,6 +127,11 @@ namespace BLL.Services
                 var isEmailTaken = await _userManager.FindByEmailAsync(user.Email);
                 if (isEmailTaken != null) throw new EmailAlreadyTakenException(user.Email);
                 userEntity.Email = user.Email;
+            }
+
+            if (user.AvatarUrl != null && !userEntity.AvatarUrl.Equals(user.AvatarUrl))
+            {
+                userEntity.AvatarUrl = user.AvatarUrl;
             }
 
             return (await _userManager.UpdateAsync(userEntity)).Succeeded;

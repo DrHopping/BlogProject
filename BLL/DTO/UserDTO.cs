@@ -10,6 +10,7 @@ namespace BLL.DTO
         [EmailAddress]
         public string Email { get; set; }
         public string Password { get; set; }
+        public string AvatarUrl { get; set; }
         public IEnumerable<BlogDTO> Blogs { get; set; }
         public IEnumerable<CommentDTO> Comments { get; set; }
     }
