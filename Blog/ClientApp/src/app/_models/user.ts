@@ -5,6 +5,8 @@ export class User {
     Id: string;
     username: string;
     email: string;
+    avatarUrl: string;
+    info: string;
     blogs: Blog[]
     Comments: Comment[]
 }

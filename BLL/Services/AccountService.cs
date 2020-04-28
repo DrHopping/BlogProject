@@ -129,9 +129,14 @@ namespace BLL.Services
                 userEntity.Email = user.Email;
             }
 
-            if (user.AvatarUrl != null && !userEntity.AvatarUrl.Equals(user.AvatarUrl))
+            if (userEntity.AvatarUrl == null || user.AvatarUrl != null && !userEntity.AvatarUrl.Equals(user.AvatarUrl))
             {
                 userEntity.AvatarUrl = user.AvatarUrl;
+            }
+
+            if (userEntity.Info == null || user.Info != null && !userEntity.Info.Equals(user.Info))
+            {
+                userEntity.Info = user.Info;
             }
 
             return (await _userManager.UpdateAsync(userEntity)).Succeeded;

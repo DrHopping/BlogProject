@@ -1,57 +1,59 @@
-<div class="row">
+<div class="row" *ngIf="user">
   <div class="col-md-12">
-    <form>
+    <form [formGroup]="userUpdateForm">
       <div class="form-group row">
-        <label for="username" class="col-4 col-form-label">User Name*</label>
+        <label for="username" class="col-4 col-form-label">User Name</label>
         <div class="col-8">
-          <input id="username" name="username" placeholder="Username" class="form-control here" required="required"
-            type="text">
+          <input type="text" formControlName="username" placeholder="Username" class="form-control here"
+            [ngClass]="{'is-invalid': submitted && f.username.errors}" />
+          <div *ngIf="submitted && f.username.errors" class="invalid-feedback">
+            <div *ngIf="f.username.errors.required">Username is required</div>
+          </div>
         </div>
       </div>
       <div class="form-group row">
-        <label for="text" class="col-4 col-form-label">Nick Name*</label>
+        <label for="text" class="col-4 col-form-label">Avatar Url</label>
         <div class="col-8">
-          <input id="text" name="text" placeholder="Nick Name" class="form-control here" required="required"
-            type="text">
+          <input type="text" formControlName="avatarUrl" placeholder="Url" class="form-control here"
+            [ngClass]="{'is-invalid': submitted && f.avatarUrl.errors}" />
+          <div *ngIf="submitted && f.avatarUrl.errors" class="invalid-feedback">
+            <div *ngIf="f.avatarUrl.errors.required">Avatar Url is required</div>
+          </div>
         </div>
       </div>
       <div class="form-group row">
-        <label for="select" class="col-4 col-form-label">Display Name public as</label>
+        <label class="col-4 col-form-label">Email</label>
         <div class="col-8">
-          <select id="select" name="select" class="custom-select">
-            <option value="admin">Admin</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group row">
-        <label for="email" class="col-4 col-form-label">Email*</label>
-        <div class="col-8">
-          <input id="email" name="email" placeholder="Email" class="form-control here" required="required" type="text">
-        </div>
-      </div>
-      <div class="form-group row">
-        <label for="website" class="col-4 col-form-label">Website</label>
-        <div class="col-8">
-          <input id="website" name="website" placeholder="website" class="form-control here" type="text">
+          <input type="email" formControlName="email" class="form-control"
+            [ngClass]="{'is-invalid': submitted && f.email.errors}" />
+          <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+            <div *ngIf="f.email.errors.required">Email is required</div>
+            <div *ngIf="f.email.errors.email">Email must be valid</div>
+          </div>
         </div>
       </div>
       <div class="form-group row">
         <label for="publicinfo" class="col-4 col-form-label">Public Info</label>
         <div class="col-8">
-          <textarea id="publicinfo" name="publicinfo" cols="40" rows="4" class="form-control"></textarea>
-        </div>
-      </div>
-      <div class="form-group row">
-        <label for="newpass" class="col-4 col-form-label">New Password</label>
-        <div class="col-8">
-          <input id="newpass" name="newpass" placeholder="New Password" class="form-control here" type="text">
+          <textarea id="publicinfo" formControlName="info" cols="40" rows="4" class="form-control"></textarea>
         </div>
       </div>
       <div class="form-group row">
         <div class="offset-4 col-8">
-          <button name="submit" type="submit" class="btn btn-primary">Update My Profile</button>
+          <button type="submit" (click)="OnSubmit()" class="btn btn-primary" [disabled]="loading">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+            Update My Profile
+          </button>
         </div>
       </div>
     </form>
+  </div>
+  <div *ngIf="success" class="alert alert-success col-md-12" role="alert">
+    Updated successfully!
+    <a href="#" class="close" (click)="removeAlert($event)">&times;</a>
+  </div>
+  <div *ngIf="error" class="alert alert-danger col-md-12" role="alert">
+    Error!
+    <a href="#" class="close" (click)="removeAlert($event)">&times;</a>
   </div>
 </div>

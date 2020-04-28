@@ -20,7 +20,10 @@
           </div>
 
 
-          <app-profile-settings [hidden]="selectedTab != 1"></app-profile-settings>
+          <ng-container *ngIf="user">
+            <app-profile-settings [user]="user" [hidden]="selectedTab != 1"></app-profile-settings>
+          </ng-container>
+
 
         </div>
       </div>

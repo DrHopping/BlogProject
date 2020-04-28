@@ -38,7 +38,6 @@ namespace Blog.Controllers
             return Ok(users);
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpGet]
         [Route("{id}")]
         public async Task<IActionResult> GetUserById(int id)

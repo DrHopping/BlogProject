@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthenticationService } from '../_services/authentication.service';
-import { Observable, Subscriber, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { AuthUser } from '../_models/authUser';
+import { CurrentUserService } from '../_services/current-user.service';
 
 @Component({
   selector: 'app-nav-menu',
@@ -14,11 +15,11 @@ export class NavMenuComponent implements OnInit, OnDestroy {
   isExpanded = false;
   user: AuthUser;
 
-  constructor(private authService: AuthenticationService) { }
+  constructor(private authService: AuthenticationService, private currentUserService: CurrentUserService) { }
 
 
   ngOnInit(): void {
-    this.sub = this.authService.currentUser$.subscribe(u => this.user = u);
+    this.sub = this.currentUserService.currentUser$.subscribe(u => this.user = u);
   }
 
   logout() {

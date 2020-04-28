@@ -7,6 +7,7 @@ namespace DAL.Entities
     public class User : IdentityUser<int>
     {
         public string AvatarUrl { get; set; }
+        public string Info { get; set; }
         public IEnumerable<Comment> Comments { get; set; }
         public IEnumerable<Blog> Blogs { get; set; }
     }

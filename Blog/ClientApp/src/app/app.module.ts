@@ -42,7 +42,7 @@ import { ProfileSettingsComponent } from './profile/profile-settings/profile-set
       { path: 'login', component: LoginComponent },
       { path: 'signup', component: SignupComponent },
       { path: 'profile', component: ProfileComponent },
-    ])
+    ], { onSameUrlNavigation: 'reload' })
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
