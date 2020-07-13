@@ -1,0 +1,94 @@
+.slogan {
+  font-size: 90px;
+  font-family: "Calisto MT", "Bookman Old Style", Bookman, "Goudy Old Style", Garamond, "Hoefler Text", "Bitstream Charter", Georgia, serif;
+}
+
+.container {
+  margin-top: 10em;
+}
+
+.create {
+  margin-top: 5em;
+  font-size: 30px;
+  align-content: center;
+  width: 15em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  background-color: rgb(80, 105, 219);
+}
+
+.create:hover {
+  background-color: rgb(40, 48, 161);
+}
+
+.login {
+  margin-top: 1em;
+}
+
+
+.card-columns {
+  -webkit-column-count: 2;
+  -moz-column-count: 2;
+  column-count: 2;
+}
+
+.card-columns>.card {
+  margin-left: 2em;
+}
+
+@media(max-width: 64em) {
+  .card-columns {
+    -webkit-column-count: 1;
+    -moz-column-count: 1;
+    column-count: 1;
+  }
+
+  .card-columns>.card {
+    margin-left: 5em;
+  }
+}
+
+
+.header {
+  text-align: center;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.blog-link {
+  color: rgb(34, 33, 33);
+}
+
+.card-body>.btn {
+  color: white;
+  font-size: 16px;
+  min-width: 5em;
+}
+
+.card-body>:hover {
+  color: black;
+}
+
+.btnAdd {
+  border-radius: 10px 0px 0px 10px;
+}
+
+.btnUpdate {
+  background-color: rgb(73, 150, 238);
+  border-color: rgb(73, 150, 238);
+  border-radius: 0px;
+}
+
+.btnUpdate:hover {
+  background-color: rgb(34, 115, 207);
+  border-color: rgb(34, 115, 207);
+}
+
+.btnDelete {
+  background-color: rgb(223, 74, 89);
+  border-radius: 0px 10px 10px 0px;
+}
+
+.btnDelete:hover {
+  background-color: rgb(167, 29, 43);
+}

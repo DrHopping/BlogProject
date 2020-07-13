@@ -14,14 +14,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services
 {
-    public class AccountService : IAccountService
+    public class UserService : IUserService
     {
         private readonly UserManager<User> _userManager;
         private readonly IJwtFactory _jwtFactory;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public AccountService(UserManager<User> userManager, IJwtFactory jwtFactory, IUnitOfWork unitOfWork, IMapper mapper)
+        public UserService(UserManager<User> userManager, IJwtFactory jwtFactory, IUnitOfWork unitOfWork, IMapper mapper)
         {
             _userManager = userManager;
             _jwtFactory = jwtFactory;
@@ -54,8 +54,55 @@ namespace BLL.Services
         public async Task<UserDTO> RegisterModerator(UserDTO userDto) => await RegisterToRole("Moderator", userDto);
         public async Task<IEnumerable<UserDTO>> GetAllRegularUsers() => await GetUsersByRole("RegularUser");
         public async Task<IEnumerable<UserDTO>> GetAllModerators() => await GetUsersByRole("Moderator");
+
         public async Task<IEnumerable<UserDTO>> GetAllUsers()
-            => _mapper.Map<IEnumerable<User>, IEnumerable<UserDTO>>(await _userManager.Users.ToListAsync());
+        {
+            var users = new List<UserDTO>();
+            var entities = await _userManager.Users.ToListAsync();
+            foreach (var user in entities)
+            {
+                var userDto = _mapper.Map<UserDTO>(user);
+                userDto.Role = (await _userManager.GetRolesAsync(user)).First();
+                users.Add(userDto);
+            }
+
+            return users;
+        }
+
+        public async Task PromoteUser(int id, string token)
+        {
+            if (token == null) throw new ArgumentNullException(nameof(token));
+
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null) throw new EntityNotFoundException(nameof(user), id);
+
+            var requesterRoleClaim = _jwtFactory.GetUserRoleClaim(token);
+            if (requesterRoleClaim != "Admin") throw new NotEnoughRightsException();
+
+            var result = await _userManager.RemoveFromRoleAsync(user, "RegularUser");
+            if (!result.Succeeded) throw new PromoteException("Couldn't delete user from Regular role");
+
+            result = await _userManager.AddToRoleAsync(user, "Moderator");
+            if (!result.Succeeded) throw new PromoteException("Couldn't add user to Moderator role");
+        }
+
+        public async Task UnpromoteUser(int id, string token)
+        {
+            if (token == null) throw new ArgumentNullException(nameof(token));
+
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null) throw new EntityNotFoundException(nameof(user), id);
+
+            var requesterRoleClaim = _jwtFactory.GetUserRoleClaim(token);
+            if (requesterRoleClaim != "Admin") throw new NotEnoughRightsException();
+
+            var result = await _userManager.RemoveFromRoleAsync(user, "Moderator");
+            if (!result.Succeeded) throw new PromoteException("Couldn't delete user from Moderator role");
+
+            result = await _userManager.AddToRoleAsync(user, "RegularUser");
+            if (!result.Succeeded) throw new PromoteException("Couldn't add user to Regular role");
+        }
+
 
         public async Task<UserDTO> GetUserById(int id, string token)
         {
@@ -105,7 +152,6 @@ namespace BLL.Services
         public async Task<bool> UpdateUser(int id, UserDTO user, string token)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
-            if (user.Username == null && user.Email == null) throw new ArgumentNullException(nameof(user));
 
             var requesterId = _jwtFactory.GetUserIdClaim(token);
             var requesterRole = _jwtFactory.GetUserRoleClaim(token);

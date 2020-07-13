@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit {
     private currentUserService: CurrentUserService
   ) {
     if (this.currentUserService.getCurrentUser()) {
-      this.router.navigate(['/articles'])
+      this.router.navigate(['/home'])
     }
   }
 
@@ -36,6 +36,8 @@ export class LoginComponent implements OnInit {
       username: ['', Validators.required],
       password: ['', Validators.required]
     });
+
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
   OnSubmit() {
@@ -45,10 +47,9 @@ export class LoginComponent implements OnInit {
 
     this.loading = true;
     this.authenticationService.login(this.f.username.value, this.f.password.value)
-      .pipe(first())
       .subscribe(
         data => {
-          this.router.navigate(['/articles']);
+          this.router.navigateByUrl(this.returnUrl);
         },
         error => {
           this.error = error;

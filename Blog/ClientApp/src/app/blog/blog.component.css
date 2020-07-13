@@ -1,0 +1,27 @@
+small {
+  font-size: 25px;
+}
+
+.slogan {
+  padding-top: 90px;
+  font-size: 90px;
+  font-family: "Calisto MT", "Bookman Old Style", Bookman, "Goudy Old Style", Garamond, "Hoefler Text", "Bitstream Charter", Georgia, serif;
+}
+
+.get-started {
+  margin-top: 5em;
+  font-size: 30px;
+  align-content: center;
+  width: 15em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  background-color: rgb(80, 105, 219);
+}
+
+.get-started:hover {
+  background-color: rgb(40, 48, 161);
+}
+
+.login {
+  margin-top: 1em;
+}

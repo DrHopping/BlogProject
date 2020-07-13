@@ -12,7 +12,7 @@ namespace DAL.Entities
         public string Title { get; set; }
         [MaxLength(5000)]
         public string Content { get; set; }
-
+        public string ImageUrl { get; set; }
         [ForeignKey("Blog")]
         public int BlogId { get; set; }
         public Blog Blog { get; set; }

@@ -27,7 +27,7 @@ namespace Blog.Extensions
             services.AddScoped<ExceptionHandlerMiddleware>();
             services.AddScoped<IJwtFactory, JwtFactory>();
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<IBlogService, BlogService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IArticleService, ArticleService>();

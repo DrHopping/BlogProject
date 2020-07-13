@@ -1,0 +1,19 @@
+<div class="d-flex">
+  <span class="title ml-auto mr-auto">Users</span>
+</div>
+<hr>
+<form>
+  <div class="form-group form-inline">
+    Username search: <input class="form-control ml-2" type="text" [formControl]="filter" />
+  </div>
+</form>
+<ng-container *ngFor="let user of users$ | async">
+  <div *ngIf="user.role != 'Admin'" class="user d-flex m-5 p-2">
+    <span class="username">{{user.username}}</span>
+    <div class="buttons ml-auto">
+      <a class="btn btn-danger ml-4" (click)="deleteUser(user.id)">Delete</a>
+      <a *ngIf="user.role == 'RegularUser'" class="btn btn-primary ml-4" (click)="promoteUser(user.id)">Promote</a>
+      <a *ngIf="user.role == 'Moderator'" class="btn btn-primary ml-4" (click)="unpromoteUser(user.id)">Unpromote</a>
+    </div>
+  </div>
+</ng-container>

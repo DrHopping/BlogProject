@@ -4,7 +4,7 @@ using BLL.DTO;
 
 namespace BLL.Services
 {
-    public interface IAccountService
+    public interface IUserService
     {
         Task<UserDTO> RegisterRegularUser(UserDTO userDTO);
         Task<UserDTO> RegisterModerator(UserDTO userDTO);
@@ -15,5 +15,8 @@ namespace BLL.Services
         Task<bool> DeleteUser(int id, string token);
         Task<bool> UpdateUser(int id, UserDTO user, string token);
         Task<bool> ChangePassword(int id, PasswordDTO password, string token);
+        Task PromoteUser(int id, string token);
+        Task UnpromoteUser(int id, string token);
+
     }
 }

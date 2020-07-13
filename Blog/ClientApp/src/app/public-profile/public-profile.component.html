@@ -1,0 +1,31 @@
+<div class="row">
+  <div class="col-md-8">
+    <div class="header">
+      {{user.username}} Blogs
+    </div>
+    <hr>
+    <div class="card-columns">
+      <ng-container *ngFor="let blog of blogs">
+        <div class="card" style="width: 18rem;">
+          <div class="card-body">
+            <h5 class="card-title"><a class="blog-link" [routerLink]="['/blogs/', blog.id]">{{blog.name}}</a></h5>
+            <hr>
+            <p class="card-text">{{blog.description}}</p>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <div *ngIf="user" class="col-md-4">
+    <div class="card">
+      <h5 class="card-header">{{user.username}}</h5>
+      <div class="card-body">
+        <img class="img-thumbnail" *ngIf="user.avatarUrl" [src]="user.avatarUrl" alt="avatar">
+        <hr>
+        {{user.info}}
+      </div>
+    </div>
+  </div>
+
+</div>

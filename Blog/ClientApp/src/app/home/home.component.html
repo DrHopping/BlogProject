@@ -1,0 +1,6 @@
+<ng-container *ngIf="!user">
+  <app-home-getstarted></app-home-getstarted>
+</ng-container>
+<ng-container *ngIf="user">
+  <app-home-authorized></app-home-authorized>
+</ng-container>

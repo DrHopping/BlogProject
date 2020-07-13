@@ -57,7 +57,7 @@ namespace Blog.Controllers
         [Route("{id}")]
         public async Task<IActionResult> UpdateBlog(int id, [FromBody] BlogCreateModel model)
         {
-            await _blogService.UpdateBlogName(id, _mapper.Map<BlogDTO>(model), Request.GetToken());
+            await _blogService.UpdateBlog(id, _mapper.Map<BlogDTO>(model), Request.GetToken());
             return NoContent();
         }
 
@@ -76,5 +76,13 @@ namespace Blog.Controllers
         {
             return Ok(await _blogService.GetAllArticlesByBlogId(id));
         }
+
+        [HttpGet]
+        [Route("/api/users/{userId}/blogs")]
+        public async Task<IActionResult> GetUserBlogs(int userId)
+        {
+            return Ok(await _blogService.GetAllBlogsByUserId(userId));
+        }
+
     }
 }

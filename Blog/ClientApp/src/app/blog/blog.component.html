@@ -1,0 +1,40 @@
+ <ng-container *ngIf="blog.articles.length > 0">
+   <div *ngIf="blog" class="container">
+
+     <div class="row">
+
+       <div class="col-md-8">
+
+         <h1 class="my-4">{{blog.name}}
+           <small>by <a [routerLink]="['/users/', blog.ownerId]">{{blog.ownerUsername}}</a></small>
+         </h1>
+
+         <app-article-list [articles]="blog.articles"></app-article-list>
+
+       </div>
+
+       <div class="col-md-4">
+
+         <div class="card my-4">
+           <h5 class="card-header">Description</h5>
+           <div class="card-body">
+             {{blog.description}}
+             {{blog.articles.length}}
+           </div>
+         </div>
+
+       </div>
+
+     </div>
+
+   </div>
+ </ng-container>
+ <ng-container *ngIf="blog.articles.length == 0">
+   <div class="container">
+     <div class="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+       <h1 class="slogan">There is no articles yet</h1>
+       <a *ngIf="blog.ownerId == user.id" class="get-started btn btn-primary" [routerLink]="['/create/article']"
+         [queryParams]=" {blogId:blog.id}">Write first article</a>
+     </div>
+   </div>
+ </ng-container>

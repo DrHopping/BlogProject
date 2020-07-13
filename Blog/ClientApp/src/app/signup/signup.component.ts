@@ -45,14 +45,12 @@ export class SignupComponent implements OnInit {
 
     this.loading = true;
     this.authService.signup(this.f.username.value, this.f.password.value, this.f.email.value)
-      .pipe(first())
       .subscribe(
         data => {
           this.authService.login(this.f.username.value, this.f.password.value)
-            .pipe(first())
             .subscribe(
               data => {
-                this.router.navigate(['/articles']);
+                this.router.navigate(['/']);
               },
               error => {
                 this.error = error;

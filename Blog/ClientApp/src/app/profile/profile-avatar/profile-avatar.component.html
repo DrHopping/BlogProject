@@ -1,0 +1,27 @@
+<div class="row">
+
+  <div class="col-4">
+    <img class="img-thumbnail" [src]="avatarUrl" alt="">
+  </div>
+
+  <div class="col-8">
+    <div class="custom-file">
+      <input (change)="onFileSelected($event)" type="file" class="custom-file-input" id="customFile">
+      <label class="custom-file-label" for="customFile">{{fileName}}</label>
+    </div>
+    <button (click)="OnSubmit()" type="button" [disabled]="loading" class="btn btn-primary">
+      <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+      Upload
+    </button>
+
+    <div *ngIf="success" class="alert alert-success col-8" role="alert">
+      Updated successfully!
+      <a href="#" class="close" (click)="removeAlert($event)">&times;</a>
+    </div>
+    <div *ngIf="error" class="alert alert-danger col-8" role="alert">
+      {{error}}
+      <a href="#" class="close" (click)="removeAlert($event)">&times;</a>
+    </div>
+  </div>
+
+</div>

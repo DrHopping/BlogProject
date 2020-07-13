@@ -1,8 +1,9 @@
 export class Comment {
-    Id: number;
+    id: number;
     content: string;
     articleId: number;
     creatorId: number;
     creatorUsername: string;
-    LastUpdated: Date
+    LastUpdated: Date;
+    creatorAvatarUrl: string;
 }

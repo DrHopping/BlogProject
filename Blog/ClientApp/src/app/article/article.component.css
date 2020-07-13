@@ -1,3 +1,13 @@
 .article-header {
   display: flex;
 }
+
+.content {
+  max-width: 900px;
+}
+
+.tag {
+  font-size: 17px;
+  color: grey;
+  margin-right: 10px;
+}

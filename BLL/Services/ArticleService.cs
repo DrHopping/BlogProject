@@ -29,6 +29,14 @@ namespace BLL.Services
             _mapper = mapper;
         }
 
+        private bool CheckRights(string token, int id, bool create)
+        {
+            var claimsId = _jwtFactory.GetUserIdClaim(token);
+            var role = _jwtFactory.GetUserRoleClaim(token);
+            if (!create && (role == "Admin" || role == "Moderator")) return true;
+            return claimsId.Equals(id);
+        }
+
         private async Task<IEnumerable<int>> CreateTagsAndReturnIds(ArticleDTO articleDto)
         {
             var existingTags = (await _unitOfWork.TagRepository.GetAllAsync()).Select(t => t.Name);
@@ -67,9 +75,8 @@ namespace BLL.Services
         {
             var blog = await _unitOfWork.BlogRepository.GetByIdAsync(articleDto.BlogId.GetValueOrDefault());
             if (blog == null) throw new EntityNotFoundException(nameof(blog), articleDto.BlogId.GetValueOrDefault());
-            var ownerId = blog.OwnerId;
-            var requesterId = _jwtFactory.GetUserIdClaim(token);
-            if (!ownerId.Equals(requesterId)) throw new NotEnoughRightsException();
+
+            if (!CheckRights(token, blog.OwnerId, true)) throw new NotEnoughRightsException();
 
             var articleEntity = _mapper.Map<ArticleDTO, Article>(articleDto);
             articleEntity = await _unitOfWork.ArticleRepository.InsertAndSaveAsync(articleEntity);
@@ -84,12 +91,7 @@ namespace BLL.Services
             var article = await _unitOfWork.ArticleRepository.GetByIdAsync(id, "Blog");
             if (article == null) throw new EntityNotFoundException(nameof(article), id);
 
-            var ownerId = article.Blog.OwnerId;
-            var requesterId = _jwtFactory.GetUserIdClaim(token);
-            if (!ownerId.Equals(requesterId))
-            {
-                if (!_jwtFactory.GetUserRoleClaim(token).Equals("Moderator")) throw new NotEnoughRightsException();
-            }
+            if (!CheckRights(token, article.Blog.OwnerId, false)) throw new NotEnoughRightsException();
 
             await _unitOfWork.ArticleRepository.DeleteAndSaveAsync(article);
         }
@@ -99,12 +101,23 @@ namespace BLL.Services
             var article = await _unitOfWork.ArticleRepository.GetByIdAsync(id, "Blog,ArticleTags.Tag");
             if (article == null) throw new EntityNotFoundException(nameof(article), id);
 
-            var ownerId = article.Blog.OwnerId;
-            var requesterId = _jwtFactory.GetUserIdClaim(token);
-            if (!ownerId.Equals(requesterId)) throw new NotEnoughRightsException();
+            if (!CheckRights(token, article.Blog.OwnerId, false)) throw new NotEnoughRightsException();
 
-            if (!articleDto.Title.IsNullOrEmpty()) article.Title = articleDto.Title;
-            if (!articleDto.Content.IsNullOrEmpty()) article.Content = articleDto.Content;
+            if (article.Title != articleDto.Title && !articleDto.Title.IsNullOrEmpty())
+            {
+                article.Title = articleDto.Title;
+            }
+
+            if (article.Content != articleDto.Content && !articleDto.Content.IsNullOrEmpty())
+            {
+                article.Content = articleDto.Content;
+            }
+
+            if (article.ImageUrl != articleDto.ImageUrl && !articleDto.ImageUrl.IsNullOrEmpty())
+            {
+                article.ImageUrl = articleDto.ImageUrl;
+            }
+
             await CreateArticleTagConnection(articleDto, article);
 
             article.LastUpdated = DateTime.Now;
@@ -157,7 +170,7 @@ namespace BLL.Services
 
         public async Task<IEnumerable<ArticleDTO>> GetAllArticles()
         {
-            var articles = await _unitOfWork.ArticleRepository.GetAllAsync("Blog,ArticleTags.Tag");
+            var articles = await _unitOfWork.ArticleRepository.GetAllAsync("Blog.Owner,ArticleTags.Tag");
             return _mapper.Map<IEnumerable<Article>, IEnumerable<ArticleDTO>>(articles);
         }
     }

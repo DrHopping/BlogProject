@@ -30,6 +30,8 @@ namespace BLL.Services
         private bool CheckRights(string token, int id)
         {
             var claimsId = _jwtFactory.GetUserIdClaim(token);
+            var role = _jwtFactory.GetUserRoleClaim(token);
+            if (role == "Admin" || role == "Moderator") return true;
             return claimsId.Equals(id);
         }
 
@@ -51,6 +53,7 @@ namespace BLL.Services
         public async Task DeleteBlog(int id, string token)
         {
             var blog = await _unitOfWork.BlogRepository.GetByIdAsync(id);
+            if (blog == null) throw new EntityNotFoundException(nameof(blog), id);
             if (token == null) throw new ArgumentNullException(nameof(token));
 
             if (!CheckRights(token, blog.OwnerId))
@@ -58,16 +61,27 @@ namespace BLL.Services
             await _unitOfWork.BlogRepository.DeleteAndSaveAsync(blog);
         }
 
-        public async Task<BlogDTO> UpdateBlogName(int id, BlogDTO blogDto, string token)
+        public async Task<BlogDTO> UpdateBlog(int id, BlogDTO blogDto, string token)
         {
             var blog = await _unitOfWork.BlogRepository.GetByIdAsync(id);
             if (blog == null) throw new EntityNotFoundException(nameof(blog), id);
 
             if (!CheckRights(token, blog.OwnerId)) throw new NotEnoughRightsException();
-            if (await _unitOfWork.BlogRepository.FirstOrDefaultAsync(b => b.Name == blogDto.Name) != null)
+
+            var blogWithSameName = await _unitOfWork.BlogRepository.FirstOrDefaultAsync(b => b.Name == blogDto.Name);
+            if (blogWithSameName != null && blog.Id != blogWithSameName.Id)
                 throw new NameAlreadyTakenException(blogDto.Name);
 
-            blog.Name = blogDto.Name;
+            if (blog.Name != blogDto.Name && blogDto.Name != null)
+            {
+                blog.Name = blogDto.Name;
+            }
+
+            if (blog.Description != blogDto.Description && blogDto.Description != null)
+            {
+                blog.Description = blogDto.Description;
+            }
+
             var result = await _unitOfWork.BlogRepository.UpdateAndSaveAsync(blog);
             return _mapper.Map<BlogDTO>(result);
         }

@@ -20,29 +20,46 @@ namespace Blog.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IAccountService _accountService;
+        private readonly IUserService _userService;
         private readonly IMapper _mapper;
 
-        public UsersController(IAccountService accountService, IMapper mapper)
+        public UsersController(IUserService userService, IMapper mapper)
         {
-            _accountService = accountService;
+            _userService = userService;
             _mapper = mapper;
         }
-
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAllUser()
         {
-            var users = await _accountService.GetAllUsers();
+            var users = await _userService.GetAllUsers();
             return Ok(users);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPut]
+        [Route("promote")]
+        public async Task<IActionResult> PromoteUser([FromBody] PromoteModel model)
+        {
+            await _userService.PromoteUser(model.Id, Request.GetToken());
+            return NoContent();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPut]
+        [Route("unpromote")]
+        public async Task<IActionResult> UnpromoteUser([FromBody] PromoteModel model)
+        {
+            await _userService.UnpromoteUser(model.Id, Request.GetToken());
+            return NoContent();
         }
 
         [HttpGet]
         [Route("{id}")]
         public async Task<IActionResult> GetUserById(int id)
         {
-            var user = await _accountService.GetUserById(id, Request.GetToken());
+            var user = await _userService.GetUserById(id, Request.GetToken());
             return Ok(user);
         }
 
@@ -51,7 +68,7 @@ namespace Blog.Controllers
         [Route("{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateModel model)
         {
-            await _accountService.UpdateUser(id, _mapper.Map<UserDTO>(model), Request.GetToken());
+            await _userService.UpdateUser(id, _mapper.Map<UserDTO>(model), Request.GetToken());
             return NoContent();
         }
 
@@ -60,7 +77,7 @@ namespace Blog.Controllers
         [Route("{id}/password")]
         public async Task<IActionResult> ChangeUserPassword(int id, [FromBody] PasswordDTO model)
         {
-            await _accountService.ChangePassword(id, model, Request.GetToken());
+            await _userService.ChangePassword(id, model, Request.GetToken());
             return NoContent();
         }
 
@@ -69,7 +86,7 @@ namespace Blog.Controllers
         [Route("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            await _accountService.DeleteUser(id, Request.GetToken());
+            await _userService.DeleteUser(id, Request.GetToken());
             return NoContent();
         }
 
@@ -77,7 +94,7 @@ namespace Blog.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> RegisterRegularUser([FromBody] RegisterModel registerModel)
         {
-            var result = await _accountService.RegisterRegularUser(_mapper.Map<UserDTO>(registerModel));
+            var result = await _userService.RegisterRegularUser(_mapper.Map<UserDTO>(registerModel));
             return CreatedAtAction(nameof(GetUserById), new
             {
                 id = result.Id

@@ -4,7 +4,7 @@ namespace Blog.Models
 {
     public class BlogCreateModel
     {
-        [Required]
-        public string Name { get; set; }
+        [MaxLength(50)] [Required] public string Name { get; set; }
+        [MaxLength(200)] [Required] public string Description { get; set; }
     }
 }

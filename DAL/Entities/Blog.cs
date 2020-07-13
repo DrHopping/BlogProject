@@ -7,6 +7,7 @@ namespace DAL.Entities
     public class Blog : EntityBase<int>
     {
         public string Name { get; set; }
+        public string Description { get; set; }
 
         [ForeignKey("User")]
         public int OwnerId { get; set; }

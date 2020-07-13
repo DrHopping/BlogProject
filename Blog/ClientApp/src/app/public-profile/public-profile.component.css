@@ -1,0 +1,42 @@
+.card-columns {
+  -webkit-column-count: 2;
+  -moz-column-count: 2;
+  column-count: 2;
+}
+
+.card-columns>.card {
+  margin-left: 2em;
+}
+
+@media(max-width: 64em) {
+  .card-columns {
+    -webkit-column-count: 1;
+    -moz-column-count: 1;
+    column-count: 1;
+  }
+
+  .card-columns>.card {
+    margin-left: 5em;
+  }
+}
+
+
+.header {
+  text-align: center;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.blog-link {
+  color: rgb(34, 33, 33);
+}
+
+.card-body>.btn {
+  color: white;
+  font-size: 16px;
+  min-width: 5em;
+}
+
+.card-body>:hover {
+  color: black;
+}

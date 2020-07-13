@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DAL.Entities.Article">
+    <Position X="6.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIQAAAAgABAEAAAAAAAAEAAAAAAAAAAAAAAAAAJAA=</HashCode>
+      <FileName>Entities\Article.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DAL.Entities.ArticleTag">
+    <Position X="3" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAAEAAAAAAAgAAAAAAAAAE=</HashCode>
+      <FileName>Entities\ArticleTag.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DAL.Entities.Blog">
+    <Position X="9.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACIAAAgAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Blog.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DAL.Entities.Comment">
+    <Position X="4.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAgAAAAAAAAAAAAkAEAAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Comment.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DAL.Entities.Tag">
+    <Position X="8.25" Y="2" Width="1.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAABAA=</HashCode>
+      <FileName>Entities\Tag.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DAL.Entities.User">
+    <Position X="3" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAIAAAAAAAAAEAAAAAAAAAAAEAAIAA=</HashCode>
+      <FileName>Entities\User.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DAL.Entities.Base.EntityBase&lt;TKey&gt;">
+    <Position X="7" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Base\EntityBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DAL.Repositories.GenericRepository&lt;TEntity&gt;">
+    <Position X="6.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAUQAEAYACAEBABAAAAAIACAAIEAAAAEAgAQEABAMIE=</HashCode>
+      <FileName>Repositories\GenericRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DAL.UnitOfWork.UnitOfWork">
+    <Position X="8.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAICAYAAACAABAAAAABACAAAAIAAAIQAAAAAAAAAADA=</HashCode>
+      <FileName>UnitOfWork\UnitOfWork.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="DAL.Interfaces.IRepository&lt;TEntity&gt;">
+    <Position X="4.75" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAUQAEAYACAAAABAAAAAAACAAAEAAAAEAgAQEABAMIE=</HashCode>
+      <FileName>Interfaces\IRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DAL.Interfaces.IUnitOfWork">
+    <Position X="10.25" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAYAAAAAAAAAAAAAAAAAAAIAAAIQAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IUnitOfWork.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DAL.Entities.Base.IEntity&lt;TKey&gt;">
+    <Position X="9" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Base\IEntity.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

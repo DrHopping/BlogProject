@@ -1,0 +1,29 @@
+.tag {
+  font-size: 17px;
+  color: grey;
+  margin-right: 10px;
+}
+
+.btnUpdate {
+  background-color: rgb(73, 150, 238);
+  border-color: rgb(73, 150, 238);
+  border-radius: 10px 0px 0px 10px;
+  color: rgba(255, 255, 255, 0.863);
+}
+
+.btnUpdate:hover {
+  background-color: rgb(34, 115, 207);
+  border-color: rgb(34, 115, 207);
+  color: black;
+}
+
+.btnDelete {
+  background-color: rgb(223, 74, 89);
+  border-radius: 0px 10px 10px 0px;
+  color: rgba(255, 255, 255, 0.863);
+}
+
+.btnDelete:hover {
+  background-color: rgb(167, 29, 43);
+  color: black;
+}

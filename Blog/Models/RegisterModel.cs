@@ -6,6 +6,7 @@ namespace Blog.Models
     public class RegisterModel
     {
         [Required]
+        [MaxLength(30)]
         public string Username { get; set; }
         [Required]
         public string Password { get; set; }

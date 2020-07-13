@@ -1,0 +1,48 @@
+<div class="col-lg-auto">
+  <div class=" card">
+    <h4 class="card-header">Update your article</h4>
+    <div *ngIf="article" class="card-body">
+      <form [formGroup]="articleForm">
+        <div class="form-group">
+          <label for="blogId">Blog</label>
+          <input type="text" class="form-control" disabled [value]="article.blogName" />
+        </div>
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input type="text" formControlName="title" class="form-control"
+            [ngClass]="{'is-invalid': submitted && f.title.errors}" />
+          <div *ngIf="submitted && f.title.errors" class="invalid-feedback">
+            <div *ngIf="f.title.errors.required">Title is required</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="tags">Tags</label>
+          <input type="tags" formControlName="tags" class="form-control"
+            [ngClass]="{'is-invalid': submitted && f.tags.errors}" />
+          <div *ngIf="submitted && f.tags.errors" class="invalid-feedback">
+            <div *ngIf="f.tags.errors.required">Atleast one tag is required</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="imageUrl">Preview image url</label>
+          <input type="imageUrl" formControlName="imageUrl" class="form-control"
+            [ngClass]="{'is-invalid': submitted && f.imageUrl.errors}" />
+          <div *ngIf="submitted && f.imageUrl.errors" class="invalid-feedback">
+            <div *ngIf="f.imageUrl.errors.required">Atleast one tag is required</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="content" class="content-label">Content</label>
+          <angular-editor formControlName="content" [config]="editorConfig"></angular-editor>
+        </div>
+
+        <button type="submit" (click)="OnSubmit()" [disabled]="loading" class="btn btn-primary">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+          Update
+        </button>
+        <div *ngIf="error" class="alert alert-danger mt-3 mb-0">{{error}}</div>
+      </form>
+    </div>
+  </div>
+</div>

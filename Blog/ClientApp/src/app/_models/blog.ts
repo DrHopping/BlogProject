@@ -5,5 +5,6 @@ export class Blog {
     name: string;
     ownerId: number;
     ownerUsername: string;
+    description: string;
     articles: Article[];
 }

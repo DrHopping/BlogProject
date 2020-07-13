@@ -50,7 +50,7 @@ namespace Blog.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "Moderator")]
+        [Authorize(Roles = "Moderator,Admin")]
         [Route("{id}")]
         public async Task<IActionResult> UpdateTag(int id, [FromBody] TagCreateModel model)
         {
@@ -59,7 +59,7 @@ namespace Blog.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Roles = "Moderator")]
+        [Authorize(Roles = "Moderator,Admin")]
         [Route("{id}")]
         public async Task<IActionResult> DeleteTag(int id)
         {
