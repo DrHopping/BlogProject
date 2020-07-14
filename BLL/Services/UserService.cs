@@ -131,6 +131,14 @@ namespace BLL.Services
             }
         }
 
+        public async Task<PublicUserInfoDTO> GetPublicUserInfoById(int id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null) throw new EntityNotFoundException(nameof(user), id);
+
+            return _mapper.Map<PublicUserInfoDTO>(user);
+        }
+
         public async Task<bool> DeleteUser(int id, string token)
         {
             if (token == null) throw new ArgumentNullException(nameof(token));

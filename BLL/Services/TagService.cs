@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using BLL.DTO;
@@ -54,6 +55,14 @@ namespace BLL.Services
             var tag = await _unitOfWork.TagRepository.GetByIdAsync(id);
             if (tag == null) throw new EntityNotFoundException(nameof(tag), id);
             await _unitOfWork.TagRepository.DeleteAndSaveAsync(tag);
+        }
+
+        public async Task<IEnumerable<TagDTO>> GetTopTags()
+        {
+            var topTags = (await _unitOfWork.TagRepository.GetAllAsync("ArticleTags"))
+                .OrderByDescending(t => t.ArticleTags.Count());
+
+            return _mapper.Map<IEnumerable<TagDTO>>(topTags);
         }
     }
 }

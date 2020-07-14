@@ -56,6 +56,15 @@ namespace Blog.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
+        [Route("{id}/public")]
+        public async Task<IActionResult> GetPublicUserInfoById(int id)
+        {
+            var user = await _userService.GetPublicUserInfoById(id);
+            return Ok(user);
+        }
+
+        [HttpGet]
         [Route("{id}")]
         public async Task<IActionResult> GetUserById(int id)
         {
@@ -63,7 +72,6 @@ namespace Blog.Controllers
             return Ok(user);
         }
 
-        [Authorize]
         [HttpPut]
         [Route("{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateModel model)
@@ -72,7 +80,6 @@ namespace Blog.Controllers
             return NoContent();
         }
 
-        [Authorize]
         [HttpPut]
         [Route("{id}/password")]
         public async Task<IActionResult> ChangeUserPassword(int id, [FromBody] PasswordDTO model)
@@ -81,7 +88,6 @@ namespace Blog.Controllers
             return NoContent();
         }
 
-        [Authorize]
         [HttpDelete]
         [Route("{id}")]
         public async Task<IActionResult> DeleteUser(int id)

@@ -92,3 +92,7 @@
 .btnDelete:hover {
   background-color: rgb(167, 29, 43);
 }
+
+.btn-create-blog:hover {
+  color: rgb(0, 0, 184);
+}

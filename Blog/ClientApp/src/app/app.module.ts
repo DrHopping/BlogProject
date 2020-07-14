@@ -37,6 +37,7 @@ import { AdminPageComponent } from './admin-page/admin-page.component';
 import { AdminGuard } from './_helpers/admin.guard';
 import { CommentListComponent } from './comment/comment-list/comment-list.component';
 import { CommentFormComponent } from './comment/comment-form/comment-form.component';
+import { CategoriesWidgetComponent } from './widgets/categories-widget/categories-widget.component';
 
 @NgModule({
   declarations: [
@@ -67,6 +68,7 @@ import { CommentFormComponent } from './comment/comment-form/comment-form.compon
     AdminPageComponent,
     CommentListComponent,
     CommentFormComponent,
+    CategoriesWidgetComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

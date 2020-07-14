@@ -34,6 +34,7 @@ export class SignupComponent implements OnInit {
     this.signupForm = this.formBuilder.group({
       username: ['', Validators.required],
       password: ['', Validators.required],
+      password2: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]]
     });
   }
@@ -41,7 +42,21 @@ export class SignupComponent implements OnInit {
   OnSubmit() {
     this.submitted = true;
 
+    if (this.f.password.value != this.f.password2.value) {
+      this.error = 'Passwords does not match';
+      this.f.password.setErrors({ notSame: true });
+      this.f.password2.setErrors({ notSame: true });
+      return;
+    }
+    else {
+      this.error = ''
+      this.f.password.setErrors(null);
+      this.f.password2.setErrors(null);
+    }
+
     if (this.signupForm.invalid) { return }
+
+
 
     this.loading = true;
     this.authService.signup(this.f.username.value, this.f.password.value, this.f.email.value)

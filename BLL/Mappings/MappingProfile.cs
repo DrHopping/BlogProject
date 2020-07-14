@@ -31,6 +31,9 @@ namespace BLL.Mappings
                 .ForMember(dto => dto.Username, opt => opt.MapFrom(ent => ent.UserName))
                 .ForMember(dto => dto.Password, opt => opt.Ignore());
 
+            CreateMap<User, PublicUserInfoDTO>()
+                .ForMember(dto => dto.Username, opt => opt.MapFrom(ent => ent.UserName));
+
             //DTO -> Entity
             CreateMap<ArticleDTO, Article>()
                 .ForMember(ent => ent.Content, opt => opt.MapFrom(dto => dto.Content))

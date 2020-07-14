@@ -20,6 +20,14 @@
           </div>
         </div>
         <div class="form-group">
+          <label for="password2">Confirm password</label>
+          <input type="password" formControlName="password2" class="form-control"
+            [ngClass]="{'is-invalid': submitted && f.password2.errors}" />
+          <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+            <div *ngIf="f.password.errors.required">Confirm the password</div>
+          </div>
+        </div>
+        <div class="form-group">
           <label for="email">Email</label>
           <input type="email" formControlName="email" class="form-control"
             [ngClass]="{'is-invalid': submitted && f.email.errors}" />

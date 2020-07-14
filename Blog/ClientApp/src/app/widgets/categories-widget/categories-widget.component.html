@@ -1,0 +1,26 @@
+<!-- Categories Widget -->
+<div *ngIf="tags" class="card my-4">
+  <h5 class="card-header">Categories</h5>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-lg-6">
+        <ul class="list-unstyled mb-0">
+          <ng-container *ngFor="let tag of tags; let i = index">
+            <li *ngIf="i % 2 == 0">
+              <a [routerLink]="['/search']" [queryParams]="{tags:tag.name}">{{tag.name}}</a>
+            </li>
+          </ng-container>
+        </ul>
+      </div>
+      <div class="col-lg-6">
+        <ul class="list-unstyled mb-0">
+          <ng-container *ngFor="let tag of tags; let i = index">
+            <li *ngIf="i % 2 == 1">
+              <a [routerLink]="['/search']" [queryParams]="{tags:tag.name}">{{tag.name}}</a>
+            </li>
+          </ng-container>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

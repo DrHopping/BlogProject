@@ -11,5 +11,6 @@ namespace BLL.Services
         Task<TagDTO> CreateTag(TagDTO tagDto);
         Task<TagDTO> UpdateTag(int id, TagDTO tagDto);
         Task DeleteTag(int id);
+        Task<IEnumerable<TagDTO>> GetTopTags();
     }
 }

@@ -23,7 +23,7 @@ export class PublicProfileComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const userId = +this.route.snapshot.paramMap.get('id');
-    this.sub.add(this.userService.getUser(userId).subscribe(u => this.user = u));
+    this.sub.add(this.userService.getPublicUserInfo(userId).subscribe(u => this.user = u));
     this.sub.add(this.blogService.getUserBlogs(userId).subscribe(bs => this.blogs = bs));
   }
 

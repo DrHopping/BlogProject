@@ -12,6 +12,7 @@ namespace BLL.Services
         Task<IEnumerable<UserDTO>> GetAllModerators();
         Task<IEnumerable<UserDTO>> GetAllUsers();
         Task<UserDTO> GetUserById(int id, string token);
+        Task<PublicUserInfoDTO> GetPublicUserInfoById(int id);
         Task<bool> DeleteUser(int id, string token);
         Task<bool> UpdateUser(int id, UserDTO user, string token);
         Task<bool> ChangePassword(int id, PasswordDTO password, string token);

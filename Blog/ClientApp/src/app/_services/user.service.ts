@@ -57,6 +57,9 @@ export class UserService {
     return this.http.get<User>(`${environment.apiUrl}/users/${id}`);
   }
 
+  getPublicUserInfo(id: number): Observable<User> {
+    return this.http.get<User>(`${environment.apiUrl}/users/${id}/public`);
+  }
   changePassword(oldPassword, newPassword): Observable<any> {
     return this.http.put<any>(`${environment.apiUrl}/users/${this.currentUserService.getCurrentUser().id}/password`, { oldPassword, newPassword })
   }

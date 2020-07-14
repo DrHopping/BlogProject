@@ -39,6 +39,13 @@ namespace Blog.Controllers
             return Ok(await _tagService.GetTagById(id));
         }
 
+        [HttpGet]
+        [Route("top")]
+        public async Task<IActionResult> GetTopTags()
+        {
+            return Ok(await _tagService.GetTopTags());
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateTag([FromBody] TagCreateModel model)
         {
