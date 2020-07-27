@@ -23,21 +23,6 @@ namespace BlogTests.DAL
     public class RepositoryTests
     {
         [Fact]
-        public void Insert_SuccessfullyCreateBlog()
-        {
-            //Arrange
-            var mockSet = new Mock<DbSet<Blog>>();
-            var mockContext = new Mock<BlogDbContext>();
-            mockContext.Setup(m => m.Set<Blog>()).Returns(mockSet.Object);
-            var repo = new GenericRepository<Blog>(mockContext.Object);
-            var blog = new Blog { Name = "Blog" };
-            //Act
-            repo.Insert(blog);
-            //Assert
-            mockSet.Verify(m => m.Add(It.IsAny<Blog>()), Times.Once);
-        }
-
-        [Fact]
         public async Task Get_WithNoArguments_ReturnsAllBlogs()
         {
             //Arrange

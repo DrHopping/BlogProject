@@ -81,55 +81,6 @@ namespace Blog.Extensions
                         ValidateAudience = false
                     };
                 });
-
-            #region Old
-
-            /*
-            var appSettingsSection = configuration.GetSection("AppSettings");
-            var secret = appSettingsSection.Get<JwtOptions>().Secret;
-            var key = Encoding.ASCII.GetBytes(secret);
-            var signingKey = new SymmetricSecurityKey(key);
-
-            services.Configure<JwtOptions>(options =>
-            {
-                options.Secret = appSettingsSection["Secret"];
-                options.Audience = appSettingsSection["Audience"];
-                options.SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256Signature);
-            });
-
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-            }).AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    //ValidIssuer = appSettingsSection["Issuer"],
-                    //ValidAudience = appSettingsSection["Audience"],
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = signingKey,
-                };
-                options.SaveToken = true;
-                /*                options.Events = new JwtBearerEvents
-                                {
-                                    OnMessageReceived = context =>
-                                    {
-                                        if (context.Request.Query.ContainsKey("access_token"))
-                                        {
-                                            context.Token = context.Request.Query["access_token"];
-                                        }
-
-                                        return Task.CompletedTask;
-                                    }
-                                };#1#
-            });
-*/
-
-            #endregion
         }
 
     }
