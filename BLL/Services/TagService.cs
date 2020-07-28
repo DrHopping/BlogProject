@@ -60,6 +60,7 @@ namespace BLL.Services
         public async Task<IEnumerable<TagDTO>> GetTopTags()
         {
             var topTags = (await _unitOfWork.TagRepository.GetAllAsync("ArticleTags"))
+                .Where(t => t.ArticleTags.Count() != 0)
                 .OrderByDescending(t => t.ArticleTags.Count());
 
             return _mapper.Map<IEnumerable<TagDTO>>(topTags);

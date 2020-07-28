@@ -78,7 +78,7 @@ export class CreateArticleComponent implements OnInit, OnDestroy {
     this.articleForm = this.formBuilder.group({
       title: ['', Validators.required],
       tags: ['', Validators.required],
-      imageUrl: ['', Validators.required],
+      imageUrl: [''],
       content: ['', Validators.required],
       blogId: ['', Validators.required]
     });

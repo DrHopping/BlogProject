@@ -82,7 +82,7 @@ export class UpdateArticleComponent implements OnInit, OnDestroy {
     this.articleForm = this.formBuilder.group({
       title: [article.title, Validators.required],
       tags: [tags, Validators.required],
-      imageUrl: [article.imageUrl, Validators.required],
+      imageUrl: [article.imageUrl],
       content: [article.content, Validators.required],
     });
   }

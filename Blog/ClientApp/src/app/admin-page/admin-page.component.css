@@ -1,7 +1,7 @@
 .user {
   border: 1px solid black;
   border-radius: 5px;
-  background-color: lightgrey;
+  background-color: rgb(241, 241, 241);
 }
 
 .username {
@@ -11,4 +11,8 @@
 .title {
   font-size: 35px;
   font-weight: bold;
+}
+
+.btn {
+  color: white;
 }
