@@ -31,7 +31,7 @@ namespace BLL.Services
             return handler.ReadJwtToken(token);
         }
 
-        public async Task<string> GenerateEncodedToken(string userName, ClaimsIdentity identity)
+        public string GenerateEncodedToken(string userName, ClaimsIdentity identity)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);

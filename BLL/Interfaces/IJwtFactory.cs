@@ -8,7 +8,7 @@ namespace BLL.Interfaces
     public interface IJwtFactory
     {
         JwtSecurityToken DecodeToken(string token);
-        Task<string> GenerateEncodedToken(string userName, ClaimsIdentity identity);
+        string GenerateEncodedToken(string userName, ClaimsIdentity identity);
         Task<ClaimsIdentity> GenerateClaimsIdentity(User user);
         int GetUserIdClaim(string token);
         string GetUserRoleClaim(string token);

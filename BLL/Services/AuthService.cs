@@ -50,7 +50,7 @@ namespace BLL.Services
             var identity = await GetClaimsIdentity(userDto);
             if (identity == null) throw new ArgumentNullException(nameof(identity));
 
-            var token = await _jwtFactory.GenerateEncodedToken(userDto.Username, identity);
+            var token = _jwtFactory.GenerateEncodedToken(userDto.Username, identity);
             if (token == null) throw new ArgumentNullException(nameof(token));
             return new
             {

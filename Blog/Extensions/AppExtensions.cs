@@ -5,6 +5,7 @@ using DAL.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -47,6 +48,14 @@ namespace Blog.Extensions
                     }
                 }
             }
+        }
+
+        public static IApplicationBuilder EnsureDbCreated(this IApplicationBuilder app)
+        {
+            using var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope();
+            var context = serviceScope.ServiceProvider.GetRequiredService<BlogDbContext>();
+            context.Database.Migrate();
+            return app;
         }
     }
 }
