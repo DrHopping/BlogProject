@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using BLL.Interfaces;
 using BLL.Models;
 using BLL.Services;
+using Blog.Hashing;
 using Blog.Middlewares;
 using DAL.Data;
 using DAL.Entities;
@@ -43,14 +44,19 @@ namespace Blog.Extensions
 
         public static void UseIdentity(this IServiceCollection services)
         {
+            services.AddScoped<IPasswordHasher<User>, Argon2PasswordHasher<User>>();
+            services.Configure<Argon2PasswordHasherOptions>(options => {
+                options.Strength = Argon2HashStrength.Interactive;
+            });
+            
             services.AddIdentity<User, IdentityRole<int>>(o =>
                 {
                     o.User.RequireUniqueEmail = true;
-                    o.Password.RequiredLength = 6;
+                    o.Password.RequiredLength = 10;
                     o.Password.RequireLowercase = true;
-                    o.Password.RequireUppercase = false;
+                    o.Password.RequireUppercase = true;
                     o.Password.RequireDigit = true;
-                    o.Password.RequireNonAlphanumeric = false;
+                    o.Password.RequireNonAlphanumeric = true;
                 }).AddEntityFrameworkStores<BlogDbContext>()
                 .AddDefaultTokenProviders();
         }
