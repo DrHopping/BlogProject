@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using AspNetCoreRateLimit;
 using AutoMapper;
 using BLL.Interfaces;
 using BLL.Mappings;
@@ -49,6 +50,7 @@ namespace Blog
             services.UseIdentity();
             services.AddJwt(Configuration);
             services.InjectServices();
+            services.AddRateLimit(Configuration);
             services.AddAutoMapper(typeof(MappingProfile), typeof(AppMappingProfile));
             services.AddSwaggerGen(c =>
             {
@@ -81,6 +83,8 @@ namespace Blog
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseIpRateLimiting();
 
             app.UseEndpoints(endpoints =>
             {

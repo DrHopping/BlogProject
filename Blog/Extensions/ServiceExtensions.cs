@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AspNetCoreRateLimit;
 using BLL.Interfaces;
 using BLL.Models;
 using BLL.Services;
@@ -87,6 +89,14 @@ namespace Blog.Extensions
                         ValidateAudience = false
                     };
                 });
+        }
+
+        public static void AddRateLimit(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddMemoryCache();
+            services.Configure<IpRateLimitOptions>(configuration.GetSection("IpRateLimiting"));
+            services.AddInMemoryRateLimiting();
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
         }
 
     }
