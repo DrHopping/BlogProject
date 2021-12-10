@@ -10,6 +10,7 @@ using BLL.Models;
 using BLL.Services;
 using Blog.Hashing;
 using Blog.Middlewares;
+using Blog.Validators;
 using DAL.Data;
 using DAL.Entities;
 using DAL.Interfaces;
@@ -60,7 +61,8 @@ namespace Blog.Extensions
                     o.Password.RequireDigit = true;
                     o.Password.RequireNonAlphanumeric = true;
                 }).AddEntityFrameworkStores<BlogDbContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders()
+                .AddPasswordValidator<CommonPasswordsValidator>();
         }
 
         public static void AddJwt(this IServiceCollection services, IConfiguration configuration)
