@@ -7,6 +7,7 @@ using BLL.DTO;
 using BLL.Exceptions;
 using BLL.Helpers;
 using BLL.Interfaces;
+using BLL.Security;
 using DAL.Entities;
 using DAL.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -34,6 +35,7 @@ namespace BLL.Services
             if (await _userManager.FindByNameAsync(userDto.Username) != null) throw new NameAlreadyTakenException(userDto.Username);
             var user = _mapper.Map<UserDTO, User>(userDto);
             user.AvatarUrl = DefaultAvatarUrlProvider.GetDefaultAvatarUrl();
+            user.PhoneNumber = Encryption.EncryptData(userDto.PhoneNumber, "8ACF8A0C85C4F381CD3B7570F290F8FB843BB916F81E053022E633ADB4045C97");
             var result = await _userManager.CreateAsync(user, userDto.Password);
             if (result.Errors.Any()) throw new BadPasswordException(result.Errors);
             return result.Succeeded ? await _userManager.FindByNameAsync(user.UserName) : null;

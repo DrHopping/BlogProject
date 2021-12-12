@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using AutoMapper;
 using BLL.DTO;
+using BLL.Security;
 using DAL.Entities;
 
 namespace BLL.Mappings
@@ -29,6 +30,7 @@ namespace BLL.Mappings
 
             CreateMap<User, UserDTO>()
                 .ForMember(dto => dto.Username, opt => opt.MapFrom(ent => ent.UserName))
+                .ForMember(dto => dto.PhoneNumber, opt => opt.MapFrom(ent => Encryption.DecryptData(ent.PhoneNumber, "8ACF8A0C85C4F381CD3B7570F290F8FB843BB916F81E053022E633ADB4045C97")))
                 .ForMember(dto => dto.Password, opt => opt.Ignore());
 
             CreateMap<User, PublicUserInfoDTO>()
